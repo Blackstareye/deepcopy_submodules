@@ -1,0 +1,9 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"remoteAuthority": "wsl+ubuntu-18.04",
+	"settings": {}
+}

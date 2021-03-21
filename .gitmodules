@@ -1,0 +1,6 @@
+[submodule "tinysubproject"]
+	path = tinysubproject
+	url = http://blacklinux/blackeye/tinysubproject
+[submodule "tinysubproject"]
+	path = tinysubproject
+	url = http://blacklinux/blackeye/tinysubproject
