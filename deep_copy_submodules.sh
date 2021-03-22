@@ -4,31 +4,37 @@
 # if it is a remote  repo (remote <path>) it will clone the repo first
 # if it is local it doesnt need that step
 
+# Stop even, if a command in a pipe fails.
+set -e -o pipefail
 
-# help text method
+GIT_MODULE_FILE=".gitmodules"
 
-LOGGING_FILE="error.log"
-INFO_CHANNEL="info.log"
+
+SOURCE_LOCAL_URL=""
+TARGET_REMOTE_URL=""
+
 ROOT_URL=""
-TARGET_URL=""
 IS_LOCAL=false
 IS_REMOTE=false
 URL_EXIST=false
 IS_SSH=false
 
+
 INDEX=0
 declare -a IS_VALID_ARR
 declare -a URL_ARR
 
+# TODO sanity check, check if both sources are available, else quit
+# TODO sanity check, check if path is available
 
-log () {
-    echo $(date +"%c") [${1}]: ${2} >> ${LOGGING_FILE}
-}
+# import functions
+# logging
+source "log.sh"
 
-info () {
-    echo $(date +"%c") [${1}]: ${2} >> ${INFO_CHANNEL}
-}
+# util: ini parser
+source "ini_parser.sh"
 
+# help text method
 help () {
     echo "Usuage: [remote/local] [source url] [target url]."
     echo "Remote : can be http(s) or ssh (experimental)"
@@ -43,15 +49,14 @@ help () {
 is_valid_path() {
     if [[ -d ${1} ]]; then
         echo "true"
-    else 
+    else
         echo "false"
-        # TODO logging
         log "ERROR - path validation" "Path ${1} is not a valid path."
-    fi 
-
+    fi
+    
 }
 
- # TODO logging
+# TODO logging
 checkhttp() {
     if curl --output /dev/null --silent --head --fail "$1"; then
         # echo "URL exists: $1"
@@ -63,16 +68,15 @@ checkhttp() {
     fi
 }
 
- # TODO logging
 checkurl() {
     local returnvalue
-
-    case $1 in 
+    
+    case $1 in
         "http"|"https")
-        returnvalue=$(checkhttp $2)
+            returnvalue=$(checkhttp $2)
         ;;
         *)
-        log "ERROR - checkurl" "unknown type: ${1}"
+            log "ERROR - checkurl" "unknown type: ${1}"
         ;;
     esac
     echo ${returnvalue}
@@ -90,15 +94,15 @@ checkurl() {
 get_type() {
     if [[ $1 =~ ^http:// ]]; then
         echo "http"
-    elif [[ $1 =~ ^https:// ]]; then
+        elif [[ $1 =~ ^https:// ]]; then
         echo "https"
-
-    #elif [[ "$1" =~ "^(\w+@)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:([0-9]{1,5}|\w+.\w*))?(\/.*)?$" ]]; then
-    else 
+        
+        #elif [[ "$1" =~ "^(\w+@)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:([0-9]{1,5}|\w+.\w*))?(\/.*)?$" ]]; then
+    else
         result=$(echo ${1} | grep -Eo '^(\w+@)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:([0-9]{1,5}|\w+.\w*))?(\/.*)?$')
         if [[ -n ${result} ]]; then
             echo "ssh"
-
+            
         fi
         #echo "nothing"
     fi
@@ -106,80 +110,80 @@ get_type() {
 
 validate_param() {
     # is_local is_remote local_url
-
-     #echo $@ 
-     local is_remote=${2}
-     local is_local=${1}
-     local local_url=${3}
-
-     local is_valid
-     local url_type
-
-     if [[ "${is_local}" == true ]]; then
+    
+    #echo $@
+    local is_remote=${2}
+    local is_local=${1}
+    local local_url=${3}
+    
+    local is_valid
+    local url_type
+    
+    if [[ "${is_local}" == true ]]; then
         info "MODE  = LOCAL"
         is_valid=$(is_valid_path ${local_url})
         if [[ ${is_valid} == "true" ]]; then
             info "URL STATUS = VALID"
-        else 
+        else
             info "URL STATUS = NOT VALID"
         fi
-
+        
         elif [[ "${is_remote}" == true ]]; then
-            info "MODE  = REMOTE"
-            url_type=$(get_type ${local_url})
-            if [[ "${url_type}" == "ssh" ]]; then
-                IS_SSH="true"
-                is_valid="true"
-            else 
-                is_valid=$(checkurl "${url_type}" "${local_url}")
-            fi
+        info "MODE  = REMOTE"
+        url_type=$(get_type ${local_url})
+        if [[ "${url_type}" == "ssh" ]]; then
+            IS_SSH="true"
+            is_valid="true"
+        else
+            is_valid=$(checkurl "${url_type}" "${local_url}")
+        fi
+        
+        if [[ "$is_valid" == true ]]; then
+            info "CONNECTION  = EXIST"
             
-            if [[ "$is_valid" == true ]]; then
-                info "CONNECTION  = EXIST"
-
-
-                if [[ "${IS_SSH}" == true ]]; then
-                    info "TYPE  = SSH"
-                else 
-                    info "TYPE  = WEB"
-                fi
+            
+            if [[ "${IS_SSH}" == true ]]; then
+                info "TYPE  = SSH"
             else
-                info "CONNECTION  = NOT EXIST"
-                info "CONNECTION  = deep copy can't be executed."
+                info "TYPE  = WEB"
             fi
+        else
+            info "CONNECTION  = NOT EXIST"
+            info "CONNECTION  = deep copy can't be executed."
+        fi
     else
         info "MODE  = UNDEFINED"
     fi
-
+    
     info "URL   = ${LOCAL_URL}"
-
+    
     #return the plausi value
     echo ${is_valid}
-
+    
     # if [[ -n $1 ]]; then
     #     echo "Last line of the file specified as non-opt/last argument"
     # fi
-
+    
 }
 
 
-# PARAMS 
-    ## check arguments
+# PARAMS
+## check arguments
 plausi_check() {
     local returnvalue
     local key
     local is_local
     local is_remote
     local local_url
-
-
-    if [[ $# -eq 1 ]]; then 
-            local_url=${1}
-            returnvalue=$(validate_param "false" "true" ${local_url})
-            echo ${returnvalue} ${local_url}
+    
+    
+    if [[ $# -eq 1 ]]; then
+        local_url=${1}
+        returnvalue=$(validate_param "false" "true" ${local_url})
+        echo ${returnvalue} ${local_url}
         return 0
     fi
-
+    
     key="$1"
     case $key in
         local| -l)
@@ -210,47 +214,93 @@ plausi_check() {
     echo ${returnvalue} ${local_url}
 }
 
-#  CHECK FIRST PARAM (local|remote url)
-if [[ $# -ne 3 ]]; then 
-    log "ERROR - PARAM SIZE" "Param Size needs to be at least 3 (type, source, target)"
-    exit 1
-fi
-# NOTE shift is always local not global
+main() {
+    
+    #  CHECK FIRST PARAM (local|remote url)
+    if [[ $# -ne 3 ]]; then
+        log "ERROR - PARAM SIZE" "Param Size needs to be at least 3 (type, source, target)"
+        exit 1
+    fi
 
-declare -a values_a=($(plausi_check $@))
-IS_VALID_ARR+=(${values_a[0]})
-URL_ARR+=(${values_a[1]})
-shift;
-shift;
-#  CHECK SECOND PARAM (remote)
-declare -p URL_ARR
-declare -p IS_VALID_ARR
-declare -a values_b=($(plausi_check $@))
-declare -p URL_ARR
-declare -p IS_VALID_ARR
-# NOTE += does work, index + 1 not.
-IS_VALID_ARR+=(${values_b[0]})
-URL_ARR+=(${values_b[1]})
-# IS_VALID_ARR[1]= ${values_b[0]}
-# URL_ARR[1]=${values_b[1]}
+    # collect if local or remote 
+    if [[ $1 == "local" ]]; then
+        IS_LOCAL="true"
+    fi
+     if [[ $1 == "remote" ]]; then
+         IS_REMOTE="true"
+    fi
+    
+    declare -a values_a=($(plausi_check $@))
+    IS_VALID_ARR+=(${values_a[0]})
+    URL_ARR+=(${values_a[1]})
+    # NOTE shift is always local not global
+    shift;
+    shift;
+    #  CHECK SECOND PARAM (remote)
+    declare -a values_b=($(plausi_check $@))
+    # NOTE += does work, index + 1 not.
+    IS_VALID_ARR+=(${values_b[0]})
+    URL_ARR+=(${values_b[1]})
+    # IS_VALID_ARR[1]= ${values_b[0]}
+    # URL_ARR[1]=${values_b[1]}
+    
+    set -- "${POSITIONAL[@]}" # restore positional parameters
+    #  GET MODULES
+    
+    if [[ ${IS_REMOTE} == "true" ]]; then
+        
+    #  IF REMOTE
+    #  check out  , perform, delete
+    #  ask where to put the folder
+    #  ENTER=local folder
+    # TODO
+    # SOURCE_LOCAL fill then path
+    echo remote
+    elif [[ ${IS_LOCAL} == "true" ]]; then
+        SOURCE_LOCAL_URL=${URL_ARR[0]}
+        declare -p SOURCE_LOCAL_URL
+    else
+        log "ERROR-FATAL NOT LOCAL, NOT REMOTE" "Fatal error, values of is_local (v: ${IS_LOCAL}) and is_remote (v: ${IS_REMOTE}) are both not true."
+        echo "Fatal error. Program will be exited, please refer log for further informations."
+        exit 1
+    fi 
+    #  IF LOCAL
 
+    local git_module_path=${SOURCE_LOCAL_URL}/${GIT_MODULE_FILE}
+    if [[ -f  ${git_module_path} ]]; then
+        # call ini parser:
+        parse_ini ${git_module_path}
+        for section in ${section_list[@]}; do
+            info "FINAL INI"  "[${section}]"
+            for key in $(eval echo $\{'!'configuration_${section}[@]\}); do
+                info "FINAL INI" "${key} = $(eval echo $\{configuration_${section}[$key]\}) (access it using $(echo $\{configuration_${section}[$key]\}))"
+            done
+        done
+    else
+        log "ERROR" "Git Submodule File does not exist on path ${git_module_path}."
+        echo "Git Submodule File does not exist on path ${git_module_path}."
+        echo "Program will be exited."
+        exit 1
+    fi
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    # FOR EACH MODULE -> PUSH TO NEW DOMAIN
+    # AFTER THAT PUSH ROOT GIT TO NEW DOMAIN
+    
+    
+    # LAST
+    
+    declare -p URL_ARR
+    declare -p IS_VALID_ARR
+    
+}
 
-echo ${URL_ARR[@]}
-echo ${IS_VALID_ARR[@]}
-
-set -- "${POSITIONAL[@]}" # restore positional parameters
-#  GET MODULES
-
-
-#  IF LOCAL
-
-#  IF REMOTE
-
-# FOR EACH MODULE -> PUSH TO NEW DOMAIN
-# AFTER THAT PUSH ROOT GIT TO NEW DOMAIN
-
-
-# LAST 
-
-declare -p URL_ARR
-declare -p IS_VALID_ARR
+# start program
+main $@
