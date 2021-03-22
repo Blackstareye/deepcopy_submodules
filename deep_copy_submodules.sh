@@ -1,6 +1,10 @@
 # !/bin/bash
 # this script will deep copy the modules of a given git repo
 
+# true if a tmp folder should be created or if you want to do the operations IN the given (local) folder
+CREATE_TMP_FOLDER="true"
+TMP_PATH="/tmp/submodule_pull_tmp/"
+# TODO License: GPL v3,
 # if it is a remote  repo (remote <path>) it will clone the repo first
 # if it is local it doesnt need that step
 
@@ -209,9 +213,52 @@ plausi_check() {
             POSITIONAL+=("$1") # save it in an array for later
         ;;
     esac
-
+    
     returnvalue=$(validate_param ${is_local} ${is_remote} ${local_url})
     echo ${returnvalue} ${local_url}
+}
+
+# edit the git modules with the new urls
+# following this guide 
+# https://www.w3docs.com/snippets/git/how-to-remove-a-git-submodule.html
+# TODO NOTE: TOBETESTED
+remove_submodules() {
+    local submodule=""
+
+    local removepath="${1}/${submodule}"
+
+    info "RM gitmodules" "Removing ${SOURCE_LOCAL_URL}/${GIT_MODULE_FILE}"
+
+    # remove .gitmodules
+    rm "${SOURCE_LOCAL_URL}/${GIT_MODULE_FILE}"
+
+    
+    # edit .config
+    local gitconfig_file="${SOURCE_LOCAL_URL}/.git/config"
+    local git_module_folder="${SOURCE_LOCAL_URL}/.git/modules/"
+    info "SED editing git config" "Removing Submodule entries in ${gitconfig_file}"
+    # which  ,+2d -> delete line + 2 following lines
+    sed -i '/\[submodule .*\]/,+2d' ${gitconfig_file} 
+    # unstaging submodule cache
+    for section in ${section_list[@]}; do
+        info "GITMODULE REMOVING - SUBMODULE"  "[${section}]"
+        submodule="${section}"
+
+        # remove submodule folder
+        info "GITMODULE REMOVING - SUBMODULE Remove"  "[${section}] Remove Submodule folder in ${removepath}"
+        git --cached rm  ${removepath}
+        info "GITMODULE REMOVING - SUBMODULE Remove"  "[${section}] Remove Submodule Cache folder in ${git_module_folder}/${section}"
+        rm -rf "${git_module_folder}/${section}"
+
+        # commit changes
+        info "GITMODULE REMOVING - Commit changes"  "[${section}] Commit Changes"
+        git commit -m "Removed submodule ${section}"
+
+        # remove submodule folder
+        info "GITMODULE REMOVING - Remove submodule folder"  "[${section}] remove folder: ${removepath}"
+        rm -rf  ${removepath}
+    done
+    info "GITMODULE REMOVING" "Done Removing (${section_list[@]})"
 }
 
 main() {
@@ -221,13 +268,13 @@ main() {
         log "ERROR - PARAM SIZE" "Param Size needs to be at least 3 (type, source, target)"
         exit 1
     fi
-
-    # collect if local or remote 
+    
+    # collect if local or remote
     if [[ $1 == "local" ]]; then
         IS_LOCAL="true"
     fi
-     if [[ $1 == "remote" ]]; then
-         IS_REMOTE="true"
+    if [[ $1 == "remote" ]]; then
+        IS_REMOTE="true"
     fi
     
     declare -a values_a=($(plausi_check $@))
@@ -249,56 +296,62 @@ main() {
     
     if [[ ${IS_REMOTE} == "true" ]]; then
         
-    #  IF REMOTE
-    #  check out  , perform, delete
-    #  ask where to put the folder
-    #  ENTER=local folder
-    # TODO
-    # SOURCE_LOCAL fill then path
-    echo remote
-    elif [[ ${IS_LOCAL} == "true" ]]; then
+        #  IF REMOTE
+        #  check out  , perform, delete
+        #  ask where to put the folder
+        #  ENTER=local folder
+        # TODO
+        # SOURCE_LOCAL fill then path
+        echo remote
+        elif [[ ${IS_LOCAL} == "true" ]]; then
         SOURCE_LOCAL_URL=${URL_ARR[0]}
         declare -p SOURCE_LOCAL_URL
     else
         log "ERROR-FATAL NOT LOCAL, NOT REMOTE" "Fatal error, values of is_local (v: ${IS_LOCAL}) and is_remote (v: ${IS_REMOTE}) are both not true."
-        echo "Fatal error. Program will be exited, please refer log for further informations."
-        exit 1
-    fi 
+        console_exit "ERROR- FATAL NOT LOCAL, NOT REMOTE"
+    fi
     #  IF LOCAL
-
+    
     local git_module_path=${SOURCE_LOCAL_URL}/${GIT_MODULE_FILE}
     if [[ -f  ${git_module_path} ]]; then
         # call ini parser:
         parse_ini ${git_module_path}
-        for section in ${section_list[@]}; do
-            info "FINAL INI"  "[${section}]"
-            for key in $(eval echo $\{'!'configuration_${section}[@]\}); do
-                info "FINAL INI" "${key} = $(eval echo $\{configuration_${section}[$key]\}) (access it using $(echo $\{configuration_${section}[$key]\}))"
-            done
-        done
+        if [[ ${CREATE_TMP_FOLDER} == "true" ]]; then
+            # space is important
+            if ! mkdir -p "${TMP_PATH}" || ! cp ${SOURCE_LOCAL_URL}/ ${TMP_PATH}; then
+                log "ERROR - CREATING TMP_FOLDER" "Can't create tmp folder ${TMP_PATH}"
+                console_exit "ERROR - CREATING TMP_FOLDER" "true"
+            fi
+            SOURCE_LOCAL_URL=${TMP_PATH}
+        fi
+        
+        # prepare .gitmodules
+        # change all url with new domain url
+
+        # First push submodules TODO
+        #add_submodules_new_remote
+        # then delete and change root git
+        remove_submodules ${SOURCE_LOCAL_URL}
+        # prepare .config
+        
+        # FOR EACH MODULE -> PUSH TO NEW DOMAIN
+        # AFTER THAT PUSH ROOT GIT TO NEW DOMAIN
+        
+        # for section in ${section_list[@]}; do
+        #     info "FINAL INI"  "[${section}]"
+        #     for key in $(eval echo $\{'!'configuration_${section}[@]\}); do
+        #         info "FINAL INI" "${key} = $(eval echo $\{configuration_${section}[$key]\}) (access it using $(echo $\{configuration_${section}[$key]\}))"
+        #     done
+        # done
+        
+        
     else
         log "ERROR" "Git Submodule File does not exist on path ${git_module_path}."
-        echo "Git Submodule File does not exist on path ${git_module_path}."
-        echo "Program will be exited."
-        exit 1
+        console_exit "Git Submodule File does not exist on path ${git_module_path}."
     fi
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    # FOR EACH MODULE -> PUSH TO NEW DOMAIN
-    # AFTER THAT PUSH ROOT GIT TO NEW DOMAIN
-    
     
     # LAST
     
-    declare -p URL_ARR
-    declare -p IS_VALID_ARR
     
 }
 

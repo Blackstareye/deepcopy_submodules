@@ -24,7 +24,6 @@ preprocessing() {
     ## \(, \) =  backreference group in regular expression matches
     ## (fyi: '()' = regexp group)
     ## \1 = first backreference (\n nth backreference), referred to the backreference group
-    
     ## Does: standardize git .modules to a normal ini "[submodulename]"
     local filename="${1}"
     info "INFO PARSING INI" "parsing ${filename} into standardized format ini file: ${TMP_FILE}"
