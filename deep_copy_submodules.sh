@@ -4,15 +4,19 @@
 # true if a tmp folder should be created or if you want to do the operations IN the given (local) folder
 CREATE_TMP_FOLDER="true"
 TMP_PATH="/tmp/submodule_pull_tmp/"
+
 # TODO License: GPL v3,
 # if it is a remote  repo (remote <path>) it will clone the repo first
 # if it is local it doesnt need that step
 
 # Stop even, if a command in a pipe fails.
 set -e -o pipefail
-
+# let cdw be the actual  directory
+cd "${0%/*}"
+CWD_PATH="$(pwd)"
 GIT_MODULE_FILE=".gitmodules"
-
+GIT_REMOTE_NAME="new_remote"
+GIT_REMOTE_BRANCH="master"
 
 SOURCE_LOCAL_URL=""
 TARGET_REMOTE_URL=""
@@ -219,46 +223,59 @@ plausi_check() {
 }
 
 # edit the git modules with the new urls
-# following this guide 
+# following this guide
 # https://www.w3docs.com/snippets/git/how-to-remove-a-git-submodule.html
 # TODO NOTE: TOBETESTED
 remove_submodules() {
     local submodule=""
-
+    
     local removepath="${1}/${submodule}"
-
+    
     info "RM gitmodules" "Removing ${SOURCE_LOCAL_URL}/${GIT_MODULE_FILE}"
-
+    
     # remove .gitmodules
     rm "${SOURCE_LOCAL_URL}/${GIT_MODULE_FILE}"
-
+    
     
     # edit .config
     local gitconfig_file="${SOURCE_LOCAL_URL}/.git/config"
     local git_module_folder="${SOURCE_LOCAL_URL}/.git/modules/"
     info "SED editing git config" "Removing Submodule entries in ${gitconfig_file}"
     # which  ,+2d -> delete line + 2 following lines
-    sed -i '/\[submodule .*\]/,+2d' ${gitconfig_file} 
+    sed -i '/\[submodule .*\]/,+2d' ${gitconfig_file}
     # unstaging submodule cache
     for section in ${section_list[@]}; do
         info "GITMODULE REMOVING - SUBMODULE"  "[${section}]"
         submodule="${section}"
-
+        
         # remove submodule folder
         info "GITMODULE REMOVING - SUBMODULE Remove"  "[${section}] Remove Submodule folder in ${removepath}"
         git --cached rm  ${removepath}
         info "GITMODULE REMOVING - SUBMODULE Remove"  "[${section}] Remove Submodule Cache folder in ${git_module_folder}/${section}"
         rm -rf "${git_module_folder}/${section}"
-
+        
         # commit changes
         info "GITMODULE REMOVING - Commit changes"  "[${section}] Commit Changes"
         git commit -m "Removed submodule ${section}"
-
+        
         # remove submodule folder
         info "GITMODULE REMOVING - Remove submodule folder"  "[${section}] remove folder: ${removepath}"
         rm -rf  ${removepath}
     done
     info "GITMODULE REMOVING" "Done Removing (${section_list[@]})"
+}
+
+# NOTE AND TODO TO BE TESTED
+add_submodules_new_remote() {
+    
+    local remote_url="${URL_ARR[1]}/${section}.git"
+    for section in ${section_list[@]}; do
+        info "PUBLISHING TO NEW REMOTE"  "SUBMODULE: [${section}] changing directory ${1}/${section}"
+        cd "${1}/${section}"
+        info "PUBLISHING TO NEW REMOTE"  "SUBMODULE: [${section}] with url: ${remote_url}"
+        git remote add ${GIT_REMOTE_NAME} ${remote_url}
+        git push ${GIT_REMOTE_NAME} ${GIT_REMOTE_BRANCH}
+    done
 }
 
 main() {
@@ -327,11 +344,14 @@ main() {
         
         # prepare .gitmodules
         # change all url with new domain url
-
+        
         # First push submodules TODO
-        #add_submodules_new_remote
         # then delete and change root git
+        add_submodules_new_remote ${SOURCE_LOCAL_URL}
+        
         remove_submodules ${SOURCE_LOCAL_URL}
+
+        #TODO add_submodules_local
         # prepare .config
         
         # FOR EACH MODULE -> PUSH TO NEW DOMAIN
