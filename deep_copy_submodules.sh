@@ -289,6 +289,16 @@ add_submodules_local() {
     done
 }
 
+push_changes() {
+    cd "${1}"
+    local basename=$("basename $(pwd)")
+    local remote_url="${URL_ARR[1]}/${basename}.git"
+    info "PUSH Changes of parent git repo"  "pushing local ${1} to ${remote_url}"
+    git remote add ${GIT_REMOTE_NAME} ${remote_url}
+    git push ${GIT_REMOTE_NAME} ${GIT_REMOTE_BRANCH}
+    info "PUSH Changes of parent git repo"  "Done pushing"
+}
+
 main() {
     
     #  CHECK FIRST PARAM (local|remote url)
@@ -366,18 +376,9 @@ main() {
         #TODO add_submodules_local
         add_submodules_local ${SOURCE_LOCAL_URL}
         
-        # prepare .config
-        
-        # FOR EACH MODULE -> PUSH TO NEW DOMAIN
-        # AFTER THAT PUSH ROOT GIT TO NEW DOMAIN
-        
-        # for section in ${section_list[@]}; do
-        #     info "FINAL INI"  "[${section}]"
-        #     for key in $(eval echo $\{'!'configuration_${section}[@]\}); do
-        #         info "FINAL INI" "${key} = $(eval echo $\{configuration_${section}[$key]\}) (access it using $(echo $\{configuration_${section}[$key]\}))"
-        #     done
-        # done
-        
+        push_changes ${SOURCE_LOCAL_URL}
+
+        echo "Program finished. Git repo migration sucessfull."
         
     else
         log "ERROR" "Git Submodule File does not exist on path ${git_module_path}."
