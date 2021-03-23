@@ -278,6 +278,17 @@ add_submodules_new_remote() {
     done
 }
 
+# NOTE AND TODO TO BE TESTED
+add_submodules_local() {
+    cd "${1}"
+    local remote_url="${URL_ARR[1]}/${section}.git"
+    for section in ${section_list[@]}; do
+        info "ADDING SUBMODULE LOCALLY"  "SUBMODULE: [${section}] with path: ${1}"
+        git submodule add ${remote_url}
+        git commit -m "Added the submodule ${section} to the project."
+    done
+}
+
 main() {
     
     #  CHECK FIRST PARAM (local|remote url)
@@ -345,13 +356,16 @@ main() {
         # prepare .gitmodules
         # change all url with new domain url
         
-        # First push submodules TODO
+        # First push submodules
         # then delete and change root git
         add_submodules_new_remote ${SOURCE_LOCAL_URL}
         
         remove_submodules ${SOURCE_LOCAL_URL}
-
+        
+        
         #TODO add_submodules_local
+        add_submodules_local ${SOURCE_LOCAL_URL}
+        
         # prepare .config
         
         # FOR EACH MODULE -> PUSH TO NEW DOMAIN
