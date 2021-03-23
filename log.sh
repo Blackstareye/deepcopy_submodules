@@ -1,5 +1,11 @@
-LOGGING_FILE="error.log"
-INFO_CHANNEL="info.log"
+LOG_PATH=""
+LOGGING_FILE="${LOG_PATH}/error.log"
+INFO_CHANNEL="${LOG_PATH}/info.log"
+init_log() {
+    LOG_PATH="${1}"
+    LOGGING_FILE="${LOG_PATH}/error.log"
+    INFO_CHANNEL="${LOG_PATH}/info.log"
+}
 
 log () {
     echo $(date +"%c") [${1}]: ${2} >> ${LOGGING_FILE}
@@ -16,4 +22,9 @@ console() {
 console_exit () {
     echo "Error occured - ${1}. program will be exited. Please refer the logs for further information."
     exit 1
+}
+
+clear_logs() {
+    echo "" > ${LOGGING_FILE}
+    echo "" > ${INFO_CHANNEL}
 }

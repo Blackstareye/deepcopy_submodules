@@ -3,7 +3,12 @@
 
 # true if a tmp folder should be created or if you want to do the operations IN the given (local) folder
 CREATE_TMP_FOLDER="true"
-TMP_PATH="/tmp/submodule_pull_tmp/"
+TMP_PATH="/tmp/submodule_pull_tmp"
+
+# NOTE: this will be needed if you debug with bashdb (vscode)
+DEBUG="true"
+CLEAR_LOGS="true"
+SCRIPT_PATH="/mnt/p/Software_Projekte/Skripte/deepcopy-submodules/"
 
 # TODO License: GPL v3,
 # if it is a remote  repo (remote <path>) it will clone the repo first
@@ -12,7 +17,13 @@ TMP_PATH="/tmp/submodule_pull_tmp/"
 # Stop even, if a command in a pipe fails.
 set -e -o pipefail
 # let cdw be the actual  directory
-cd "${0%/*}"
+# FOR DEBUG
+if [[ "$DEBUG" == "true" ]]; then
+    cd ${SCRIPT_PATH}
+else
+    cd "${0%/*}"
+fi
+
 CWD_PATH="$(pwd)"
 GIT_MODULE_FILE=".gitmodules"
 GIT_REMOTE_NAME="new_remote"
@@ -21,6 +32,7 @@ GIT_REMOTE_BRANCH="master"
 SOURCE_LOCAL_URL=""
 TARGET_REMOTE_URL=""
 
+BASE_PATH=""
 ROOT_URL=""
 IS_LOCAL=false
 IS_REMOTE=false
@@ -37,7 +49,15 @@ declare -a URL_ARR
 
 # import functions
 # logging
+
 source "log.sh"
+init_log ${CWD_PATH}
+if [[ "${CLEAR_LOGS}" == "true" ]]; then
+    clear_logs
+    info "CLEARED LOGS" "Cleared the logs."
+    clear
+fi
+info "INFO PWD:" "PWD is : ${CWD_PATH}"
 
 # util: ini parser
 source "ini_parser.sh"
@@ -229,17 +249,20 @@ plausi_check() {
 remove_submodules() {
     local submodule=""
     
+    # change to base git
+    cd "${1}"
+
     local removepath="${1}/${submodule}"
     
-    info "RM gitmodules" "Removing ${SOURCE_LOCAL_URL}/${GIT_MODULE_FILE}"
+    info "RM gitmodules" "Removing ${1}/${GIT_MODULE_FILE}"
     
     # remove .gitmodules
-    rm "${SOURCE_LOCAL_URL}/${GIT_MODULE_FILE}"
+    rm "${1}/${GIT_MODULE_FILE}"
     
     
     # edit .config
-    local gitconfig_file="${SOURCE_LOCAL_URL}/.git/config"
-    local git_module_folder="${SOURCE_LOCAL_URL}/.git/modules/"
+    local gitconfig_file="${1}/.git/config"
+    local git_module_folder="${1}/.git/modules/"
     info "SED editing git config" "Removing Submodule entries in ${gitconfig_file}"
     # which  ,+2d -> delete line + 2 following lines
     sed -i '/\[submodule .*\]/,+2d' ${gitconfig_file}
@@ -249,8 +272,9 @@ remove_submodules() {
         submodule="${section}"
         
         # remove submodule folder
+        removepath="${1}/${submodule}"
         info "GITMODULE REMOVING - SUBMODULE Remove"  "[${section}] Remove Submodule folder in ${removepath}"
-        git --cached rm  ${removepath}
+        git rm -r --cached ${removepath}
         info "GITMODULE REMOVING - SUBMODULE Remove"  "[${section}] Remove Submodule Cache folder in ${git_module_folder}/${section}"
         rm -rf "${git_module_folder}/${section}"
         
@@ -272,8 +296,10 @@ add_submodules_new_remote() {
     for section in ${section_list[@]}; do
         info "PUBLISHING TO NEW REMOTE"  "SUBMODULE: [${section}] changing directory ${1}/${section}"
         cd "${1}/${section}"
+        remote_url="${URL_ARR[1]}/${section}.git"
         info "PUBLISHING TO NEW REMOTE"  "SUBMODULE: [${section}] with url: ${remote_url}"
         git remote add ${GIT_REMOTE_NAME} ${remote_url}
+        info "PWD LOCATION" "$(pwd)"
         git push ${GIT_REMOTE_NAME} ${GIT_REMOTE_BRANCH}
     done
 }
@@ -284,6 +310,7 @@ add_submodules_local() {
     local remote_url="${URL_ARR[1]}/${section}.git"
     for section in ${section_list[@]}; do
         info "ADDING SUBMODULE LOCALLY"  "SUBMODULE: [${section}] with path: ${1}"
+        remote_url="${URL_ARR[1]}/${section}.git"
         git submodule add ${remote_url}
         git commit -m "Added the submodule ${section} to the project."
     done
@@ -291,12 +318,27 @@ add_submodules_local() {
 
 push_changes() {
     cd "${1}"
-    local basename=$("basename $(pwd)")
-    local remote_url="${URL_ARR[1]}/${basename}.git"
+    local remote_url="${URL_ARR[1]}/${BASE_PATH}.git"
     info "PUSH Changes of parent git repo"  "pushing local ${1} to ${remote_url}"
     git remote add ${GIT_REMOTE_NAME} ${remote_url}
     git push ${GIT_REMOTE_NAME} ${GIT_REMOTE_BRANCH}
     info "PUSH Changes of parent git repo"  "Done pushing"
+}
+
+clean_up() {
+    # clean up actions
+    if [[ "${CREATE_TMP_FOLDER}" ]]; then
+        info "CLEANUP" "Cleaning up: ${SOURCE_LOCAL_URL}"
+        rm -rf ${SOURCE_LOCAL_URL}/
+    fi
+}
+
+# TODO trap clean_up ERR
+error_actions() {
+    echo "an error occured. See log what happened."
+    echo "cleaning up"
+    clean_up 
+    echo "done."
 }
 
 main() {
@@ -341,8 +383,10 @@ main() {
         # TODO
         # SOURCE_LOCAL fill then path
         echo remote
-        elif [[ ${IS_LOCAL} == "true" ]]; then
+        # BASE_PATH="$(basename ${URL_ARR[0]})"
+    elif [[ ${IS_LOCAL} == "true" ]]; then
         SOURCE_LOCAL_URL=${URL_ARR[0]}
+        BASE_PATH="$(basename ${URL_ARR[0]})"
         declare -p SOURCE_LOCAL_URL
     else
         log "ERROR-FATAL NOT LOCAL, NOT REMOTE" "Fatal error, values of is_local (v: ${IS_LOCAL}) and is_remote (v: ${IS_REMOTE}) are both not true."
@@ -356,7 +400,7 @@ main() {
         parse_ini ${git_module_path}
         if [[ ${CREATE_TMP_FOLDER} == "true" ]]; then
             # space is important
-            if ! mkdir -p "${TMP_PATH}" || ! cp ${SOURCE_LOCAL_URL}/ ${TMP_PATH}; then
+            if ! mkdir -p "${TMP_PATH}" || ! cp -rf ${SOURCE_LOCAL_URL}/. ${TMP_PATH}/; then
                 log "ERROR - CREATING TMP_FOLDER" "Can't create tmp folder ${TMP_PATH}"
                 console_exit "ERROR - CREATING TMP_FOLDER" "true"
             fi
@@ -380,6 +424,7 @@ main() {
 
         echo "Program finished. Git repo migration sucessfull."
         
+        clean_up
     else
         log "ERROR" "Git Submodule File does not exist on path ${git_module_path}."
         console_exit "Git Submodule File does not exist on path ${git_module_path}."
@@ -389,6 +434,10 @@ main() {
     
     
 }
+
+# TODO to be tested
+#trap clean_up EXIT #SIGINT
+#trap error_actions ERR
 
 # start program
 main $@
