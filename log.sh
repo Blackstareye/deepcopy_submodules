@@ -1,3 +1,6 @@
+#!/usr/bin/env bash
+# simple logging unit
+
 LOG_PATH=""
 LOGGING_FILE="${LOG_PATH}/error.log"
 INFO_CHANNEL="${LOG_PATH}/info.log"
