@@ -11,11 +11,11 @@ init_log() {
 }
 
 log () {
-    echo $(date +"%c") [${1}]: ${2} >> ${LOGGING_FILE}
+    echo "$(date +"%c")" ["${1}"]: "${2}" >> "${LOGGING_FILE}"
 }
 
 info () {
-    echo $(date +"%c") [${1}]: ${2} >> ${INFO_CHANNEL}
+    echo "$(date +"%c")" ["${1}"]: "${2}" >> "${INFO_CHANNEL}"
 }
 
 console() {
@@ -28,6 +28,6 @@ console_exit () {
 }
 
 clear_logs() {
-    echo "" > ${LOGGING_FILE}
-    echo "" > ${INFO_CHANNEL}
+    echo "" > "${LOGGING_FILE}"
+    echo "" > "${INFO_CHANNEL}"
 }

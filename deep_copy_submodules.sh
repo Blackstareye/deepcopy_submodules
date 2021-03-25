@@ -1,4 +1,4 @@
-# !/bin/bash
+#!/usr/bin/env bash
 # this script will deep copy the modules of a given git repo
 
 # TODO License: GPL v3,
@@ -33,24 +33,20 @@ CWD_PATH="$(pwd)"
 
 
 SOURCE_LOCAL_URL=""
-TARGET_REMOTE_URL=""
 
 BASE_PATH=""
-ROOT_URL=""
 IS_LOCAL=false
 IS_REMOTE=false
-URL_EXIST=false
-IS_SSH=false
+#IS_SSH=false
 
 
-INDEX=0
 
 # TODO sanity check, check if both sources are available, else quit
 # TODO sanity check, check if path is available
 
 
 
-init_log ${CWD_PATH}
+init_log "${CWD_PATH}"
 if [[ "${CLEAR_LOGS}" == "true" ]]; then
     clear_logs
     info "CLEARED LOGS" "Cleared the logs."
@@ -73,7 +69,8 @@ clean_up() {
     # clean up actions
     if [[ "${CREATE_TMP_FOLDER}" ]]; then
         info "CLEANUP" "Cleaning up: ${SOURCE_LOCAL_URL}"
-        rm -rf ${SOURCE_LOCAL_URL}/
+        # Using :? will cause the command to fail if the variable is null or unset. Similarly, you can use :- to set a default value if applicable.
+        rm -rf "${SOURCE_LOCAL_URL:?}"/
     fi
 }
 
@@ -107,17 +104,17 @@ main() {
         IS_REMOTE="true"
     fi
     
-    declare -a values_a=($(plausi_check $@))
-    IS_VALID_ARR+=(${values_a[0]})
-    URL_ARR+=(${values_a[1]})
+    declare -a values_a=($(plausi_check "$@"))
+    IS_VALID_ARR+=("${values_a[0]}")
+    URL_ARR+=("${values_a[1]}")
     # NOTE shift is always local not global
     shift;
     shift;
     #  CHECK SECOND PARAM (remote)
-    declare -a values_b=($(plausi_check $@))
+    declare -a values_b=($(plausi_check "$@"))
     # NOTE += does work, index + 1 not.
-    IS_VALID_ARR+=(${values_b[0]})
-    URL_ARR+=(${values_b[1]})
+    IS_VALID_ARR+=("${values_b[0]}")
+    URL_ARR+=("${values_b[1]}")
     # IS_VALID_ARR[1]= ${values_b[0]}
     # URL_ARR[1]=${values_b[1]}
     
@@ -136,7 +133,7 @@ main() {
         # BASE_PATH="$(basename ${URL_ARR[0]})"
     elif [[ ${IS_LOCAL} == "true" ]]; then
         SOURCE_LOCAL_URL=${URL_ARR[0]}
-        BASE_PATH="$(basename ${URL_ARR[0]})"
+        BASE_PATH="$(basename "${URL_ARR[0]}")"
         declare -p SOURCE_LOCAL_URL
     else
         log "ERROR-FATAL NOT LOCAL, NOT REMOTE" "Fatal error, values of is_local (v: ${IS_LOCAL}) and is_remote (v: ${IS_REMOTE}) are both not true."
@@ -147,10 +144,10 @@ main() {
     local git_module_path=${SOURCE_LOCAL_URL}/${GIT_MODULE_FILE}
     if [[ -f  ${git_module_path} ]]; then
         # call ini parser:
-        parse_ini ${git_module_path}
+        parse_ini "${git_module_path}"
         if [[ ${CREATE_TMP_FOLDER} == "true" ]]; then
             # space is important
-            if ! mkdir -p "${TMP_PATH}" || ! cp -rf ${SOURCE_LOCAL_URL}/. ${TMP_PATH}/; then
+            if ! mkdir -p "${TMP_PATH}" || ! cp -rf "${SOURCE_LOCAL_URL:?}"/. ${TMP_PATH}/; then
                 log "ERROR - CREATING TMP_FOLDER" "Can't create tmp folder ${TMP_PATH}"
                 console_exit "ERROR - CREATING TMP_FOLDER" "true"
             fi
@@ -159,7 +156,6 @@ main() {
         
         # prepare .gitmodules
         # change all url with new domain url
-        
         # First push submodules
         # then delete and change root git
         add_submodules_new_remote ${SOURCE_LOCAL_URL}
@@ -190,4 +186,4 @@ main() {
 #trap error_actions ERR
 
 # start program
-main $@
+main "$@"

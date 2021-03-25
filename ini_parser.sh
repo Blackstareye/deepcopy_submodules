@@ -28,8 +28,8 @@ preprocessing() {
     local filename="${1}"
     info "INFO PARSING INI" "parsing ${filename} into standardized format ini file: ${TMP_FILE}"
     
-    sed 's/^\[.\+"\(.\+\)\"\]/[\1]/' ${filename} | sed 's/\-/_/g' > ${TMP_FILE}
     # clear invalid characters
+    sed 's/^\[.\+"\(.\+\)\"\]/[\1]/' "${filename}" | sed 's/\-/_/g' > ${TMP_FILE}
     
     echo "true"
 }
@@ -39,19 +39,19 @@ preprocessing() {
 # Get INI section
 read_ini_sections(){
     local filename="$1"
-    gawk '{ if ($1 ~ /^\[/) section=tolower(gensub(/\[(.+)\]/,"\\1",1,$1)); configuration[section]=1 } END {for (key in configuration) { print key} }' ${filename}
+    gawk '{ if ($1 ~ /^\[/) section=tolower(gensub(/\[(.+)\]/,"\\1",1,$1)); configuration[section]=1 } END {for (key in configuration) { print key} }' "${filename}"
 }
 
 # Get/Set all INI sections
 get_ini_sections(){
     local filename="$1"
     
-    sections="$(read_ini_sections $filename)"
+    sections="$(read_ini_sections "$filename")"
     for section in $sections; do
         array_name="configuration_${section}"
-        declare -g -A ${array_name}
+        declare -g -A "${array_name}"
     done
-    eval $(gawk -F= '{
+    eval "$(gawk -F= '{
                     if ($1 ~ /^\[/)
                       section=tolower(gensub(/\[(.+)\]/,"\\1",1,$1))
                     else if ($1 !~ /^$/ && $1 !~ /^;/) {
@@ -70,8 +70,8 @@ get_ini_sections(){
                           gsub( "-", "_", section_name)
                           print "configuration_" section_name "[\""key"\"]=\""configuration[section][key]"\";"
                         }
-        }' ${filename}
-    )
+        }' "${filename}"
+    )"
     
     
 }
@@ -92,6 +92,7 @@ parse_ini() {
             # #else
             # echo "missing"
             #fi
+            # shellcheck disable=SC2034
             section_list=$(read_ini_sections "${filename}")
 
             info "INFO - Segments of Ini " "$(declare -p sections)"

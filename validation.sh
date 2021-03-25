@@ -1,4 +1,4 @@
-# !/usr/bin/env bash
+#!/usr/bin/env bash
 # Submodule of deep_copy_submodules
 # functions for the plausi check of the given arguments
 
@@ -30,13 +30,13 @@ checkurl() {
     
     case $1 in
         "http"|"https")
-            returnvalue=$(checkhttp $2)
+            returnvalue=$(checkhttp "$2")
         ;;
         *)
             log "ERROR - checkurl" "unknown type: ${1}"
         ;;
     esac
-    echo ${returnvalue}
+    echo "${returnvalue}"
 }
 # checkssh() {
 #     if nc -w 5 -z "$1" 22 ; then
@@ -56,7 +56,7 @@ get_type() {
         
         #elif [[ "$1" =~ "^(\w+@)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:([0-9]{1,5}|\w+.\w*))?(\/.*)?$" ]]; then
     else
-        result=$(echo ${1} | grep -Eo '^(\w+@)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:([0-9]{1,5}|\w+.\w*))?(\/.*)?$')
+        result=$(echo "${1}" | grep -Eo '^(\w+@)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:([0-9]{1,5}|\w+.\w*))?(\/.*)?$')
         if [[ -n ${result} ]]; then
             echo "ssh"
             
@@ -78,7 +78,7 @@ validate_param() {
     
     if [[ "${is_local}" == true ]]; then
         info "MODE  = LOCAL"
-        is_valid=$(is_valid_path ${local_url})
+        is_valid=$(is_valid_path "${local_url}")
         if [[ ${is_valid} == "true" ]]; then
             info "URL STATUS = VALID"
         else
@@ -87,7 +87,7 @@ validate_param() {
         
         elif [[ "${is_remote}" == true ]]; then
         info "MODE  = REMOTE"
-        url_type=$(get_type ${local_url})
+        url_type=$(get_type "${local_url}")
         if [[ "${url_type}" == "ssh" ]]; then
             IS_SSH="true"
             is_valid="true"
@@ -112,10 +112,10 @@ validate_param() {
         info "MODE  = UNDEFINED"
     fi
     
-    info "URL   = ${LOCAL_URL}"
+    info "URL   = ${local_url}"
     
     #return the plausi value
-    echo ${is_valid}
+    echo "${is_valid}"
     
     # if [[ -n $1 ]]; then
     #     echo "Last line of the file specified as non-opt/last argument"
@@ -136,8 +136,8 @@ plausi_check() {
     
     if [[ $# -eq 1 ]]; then
         local_url=${1}
-        returnvalue=$(validate_param "false" "true" ${local_url})
-        echo ${returnvalue} ${local_url}
+        returnvalue=$(validate_param "false" "true" "${local_url}")
+        echo "${returnvalue}" "${local_url}"
         return 0
     fi
     
@@ -167,6 +167,6 @@ plausi_check() {
         ;;
     esac
     
-    returnvalue=$(validate_param ${is_local} ${is_remote} ${local_url})
-    echo ${returnvalue} ${local_url}
+    returnvalue=$(validate_param ${is_local} ${is_remote} "${local_url}")
+    echo "${returnvalue}" "${local_url}"
 }
