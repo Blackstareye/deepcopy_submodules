@@ -11,7 +11,7 @@ remove_submodules() {
     local submodule=""
     
     # change to base git
-    cd "${1}"  || { log "FAILURE USING CD" " ${1} was not sucessful"; console_exit; } 
+    cd "${1}"  || { error "FAILURE USING CD" " ${1} was not sucessful"; console_exit; } 
 
     local removepath="${1}/${submodule}"
     
@@ -57,7 +57,7 @@ add_submodules_new_remote() {
     local remote_url="${URL_ARR[1]}/${section}.git"
     for section in "${section_list[@]}"; do
         info "PUBLISHING TO NEW REMOTE"  "SUBMODULE: [${section}] changing directory ${1}/${section}"
-        cd "${1}/${section}" || { log "FAILURE USING CD" " ${1}/${section} was not sucessful"; console_exit; } 
+        cd "${1}/${section}" || { error "FAILURE USING CD" " ${1}/${section} was not sucessful"; console_exit; } 
         remote_url="${URL_ARR[1]}/${section}.git"
         info "PUBLISHING TO NEW REMOTE"  "SUBMODULE: [${section}] with url: ${remote_url}"
         git remote add "${GIT_REMOTE_NAME}" "${remote_url}"
@@ -68,7 +68,7 @@ add_submodules_new_remote() {
 
 # NOTE AND TODO TO BE TESTED
 add_submodules_local() {
-    cd "${1}" || { log "FAILURE USING CD" " ${1} was not sucessful"; console_exit; } 
+    cd "${1}" || { error "FAILURE USING CD" " ${1} was not sucessful"; console_exit; } 
     local remote_url="${URL_ARR[1]}/${section}.git"
     for section in "${section_list[@]}"; do
         info "ADDING SUBMODULE LOCALLY"  "SUBMODULE: [${section}] with path: ${1}"
@@ -79,7 +79,7 @@ add_submodules_local() {
 }
 
 push_changes() {
-    cd "${1}"  || { log "FAILURE USING CD" " ${1} was not sucessful"; console_exit; } 
+    cd "${1}"  || { error "FAILURE USING CD" " ${1} was not sucessful"; console_exit; } 
     local remote_url="${URL_ARR[1]}/${BASE_PATH}.git"
     info "PUSH Changes of parent git repo"  "pushing local ${1} to ${remote_url}"
     git remote add "${GIT_REMOTE_NAME}" "${remote_url}"

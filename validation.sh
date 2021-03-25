@@ -8,7 +8,7 @@ is_valid_path() {
         echo "true"
     else
         echo "false"
-        log "ERROR - path validation" "Path ${1} is not a valid path."
+        error "ERROR - path validation" "Path ${1} is not a valid path."
     fi
     
 }
@@ -21,7 +21,7 @@ checkhttp() {
     else
         #echo "given URL does not exist"
         echo "false"
-        log "ERROR - checkhttp" "URL ${1}  does not response. Can't perform deep copy."
+        error "ERROR - checkhttp" "URL ${1}  does not response. Can't perform deep copy."
     fi
 }
 
@@ -33,7 +33,7 @@ checkurl() {
             returnvalue=$(checkhttp "$2")
         ;;
         *)
-            log "ERROR - checkurl" "unknown type: ${1}"
+            error "ERROR - checkurl" "unknown type: ${1}"
         ;;
     esac
     echo "${returnvalue}"

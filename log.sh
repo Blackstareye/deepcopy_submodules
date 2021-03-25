@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
 # simple logging unit
 
-LOG_PATH=""
-LOGGING_FILE="${LOG_PATH}/error.log"
-INFO_CHANNEL="${LOG_PATH}/info.log"
+
+LOGGING_FILE="${LOG_PATH:?}/error.log"
+INFO_CHANNEL="${LOG_PATH:?}/info.log"
 init_log() {
     LOG_PATH="${1}"
     LOGGING_FILE="${LOG_PATH}/error.log"
     INFO_CHANNEL="${LOG_PATH}/info.log"
 }
 
-log () {
+error () {
     echo "$(date +"%c")" ["${1}"]: "${2}" >> "${LOGGING_FILE}"
 }
 
@@ -19,15 +19,15 @@ info () {
 }
 
 console() {
-    echo "Error occured - ${1}. Please refer the logs for further information."
+    echo "Error occured - ${1:()}. Please refer the logs for further information."
 }
 
 console_exit () {
-    echo "Error occured - ${1}. program will be exited. Please refer the logs for further information."
+    echo "Error occured - ${1:()}. program will be exited. Please refer the logs for further information."
     exit 1
 }
 
 clear_logs() {
-    echo "" > "${LOGGING_FILE}"
-    echo "" > "${INFO_CHANNEL}"
+    echo  > "${LOGGING_FILE}"
+    echo  > "${INFO_CHANNEL}"
 }

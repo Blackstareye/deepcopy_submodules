@@ -45,14 +45,13 @@ IS_REMOTE=false
 # TODO sanity check, check if path is available
 
 
-
-init_log "${CWD_PATH}"
+init_log "${LOG_PATH:-${CWD_PATH}}"
 if [[ "${CLEAR_LOGS}" == "true" ]]; then
     clear_logs
     info "CLEARED LOGS" "Cleared the logs."
     clear
 fi
-info "INFO PWD:" "PWD is : ${CWD_PATH}"
+info "INFO PWD:" "PWD is : ${LOG_PATH:-${CWD_PATH}}"
 
 
 # help text method
@@ -92,7 +91,7 @@ main() {
     
     #  CHECK FIRST PARAM (local|remote url)
     if [[ $# -ne 3 ]]; then
-        log "ERROR - PARAM SIZE" "Param Size needs to be at least 3 (type, source, target)"
+        error "ERROR - PARAM SIZE" "Param Size needs to be at least 3 (type, source, target)"
         exit 1
     fi
     
@@ -137,7 +136,7 @@ main() {
         BASE_PATH="$(basename "${URL_ARR[0]}")"
         declare -p SOURCE_LOCAL_URL
     else
-        log "ERROR-FATAL NOT LOCAL, NOT REMOTE" "Fatal error, values of is_local (v: ${IS_LOCAL}) and is_remote (v: ${IS_REMOTE}) are both not true."
+        error "ERROR-FATAL NOT LOCAL, NOT REMOTE" "Fatal error, values of is_local (v: ${IS_LOCAL}) and is_remote (v: ${IS_REMOTE}) are both not true."
         console_exit "ERROR- FATAL NOT LOCAL, NOT REMOTE"
     fi
     #  IF LOCAL
@@ -149,7 +148,7 @@ main() {
         if [[ ${CREATE_TMP_FOLDER} == "true" ]]; then
             # space is important
             if ! mkdir -p "${TMP_PATH}" || ! cp -rf "${SOURCE_LOCAL_URL:?}"/. ${TMP_PATH}/; then
-                log "ERROR - CREATING TMP_FOLDER" "Can't create tmp folder ${TMP_PATH}"
+                error "ERROR - CREATING TMP_FOLDER" "Can't create tmp folder ${TMP_PATH}"
                 console_exit "ERROR - CREATING TMP_FOLDER" "true"
             fi
             SOURCE_LOCAL_URL=${TMP_PATH}
@@ -173,7 +172,7 @@ main() {
         
         clean_up
     else
-        log "ERROR" "Git Submodule File does not exist on path ${git_module_path}."
+        error "ERROR" "Git Submodule File does not exist on path ${git_module_path}."
         console_exit "Git Submodule File does not exist on path ${git_module_path}."
     fi
     
