@@ -103,7 +103,7 @@ main() {
     if [[ $1 == "remote" ]]; then
         IS_REMOTE="true"
     fi
-    
+    # shellcheck disable=SC2207
     declare -a values_a=($(plausi_check "$@"))
     IS_VALID_ARR+=("${values_a[0]}")
     URL_ARR+=("${values_a[1]}")
@@ -111,6 +111,7 @@ main() {
     shift;
     shift;
     #  CHECK SECOND PARAM (remote)
+    # shellcheck disable=SC2207
     declare -a values_b=($(plausi_check "$@"))
     # NOTE += does work, index + 1 not.
     IS_VALID_ARR+=("${values_b[0]}")
