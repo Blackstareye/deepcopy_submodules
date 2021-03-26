@@ -1,19 +1,6 @@
 #!/usr/bin/env bats
 # those are functionality tests
 
-changeDir() {
-# let cwd be the actual  directory
-cd ${1}
-CWD_PATH="$(pwd)"
-}
-
-
-make_TMP_DIR() {
-    if [[ ! -d "${1}" ]]; then 
-        mkdir -p ${1}
-    fi
-}
-
 function setup() {
     INI_TEST_FOLDER="ini_files/normal"
     INI_TEST_FOLDER=$(realpath ${INI_TEST_FOLDER})

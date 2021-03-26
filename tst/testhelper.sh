@@ -17,4 +17,16 @@ util_grep_test_result_content() {
     done < "$1"
 }
 
+changeDir() {
+    # let cwd be the actual  directory
+    cd ${1}
+    CWD_PATH="$(pwd)"
+}
+
+
+make_TMP_DIR() {
+    if [[ ! -d "${1}" ]]; then
+        mkdir -p ${1}
+    fi
+}
 #util_grep_test_result_content $1 $2

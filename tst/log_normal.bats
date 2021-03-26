@@ -5,23 +5,11 @@
 
 
 
-changeDir() {
-# let cwd be the actual  directory
-cd ${1}
-CWD_PATH="$(pwd)"
-}
-
-
-make_TMP_DIR() {
-    if [[ ! -d "${1}" ]]; then 
-        mkdir -p ${1}
-    fi
-}
-
 function setup() {
     load "/test_helper/bats-support/load"
     load "/test_helper/bats-asserts/load"
     load "test.conf"
+    load "testhelper.sh"
     # change directoy to script directory 
     changeDir ${SCRIPT_PATH}
     # load libs
@@ -49,6 +37,7 @@ function setup() {
 @test "test clean logs" {
     run cat ${ERROR_L}
     refute_output
+    #assert_output
     run cat ${INFO_L}
     refute_output
 }
