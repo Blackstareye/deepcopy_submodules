@@ -7,13 +7,14 @@
 
 changeDir() {
 # let cwd be the actual  directory
-cd ${SCRIPT_PATH}
+cd ${1}
 CWD_PATH="$(pwd)"
 }
 
+
 make_TMP_DIR() {
-    if [[ ! -d "${LOG_PATH}" ]]; then 
-        mkdir -p ${LOG_PATH}
+    if [[ ! -d "${1}" ]]; then 
+        mkdir -p ${1}
     fi
 }
 
@@ -22,10 +23,10 @@ function setup() {
     load "/test_helper/bats-asserts/load"
     load "test.conf"
     # change directoy to script directory 
-    changeDir
+    changeDir ${SCRIPT_PATH}
     # load libs
     load "log.sh"
-    make_TMP_DIR
+    make_TMP_DIR ${LOG_PATH}
 
     declare -a PARAMS=()
     PARAMS+=("ERROR")
