@@ -2,8 +2,8 @@
 # simple logging unit
 
 
-LOGGING_FILE="${LOG_PATH:?}/error.log"
-INFO_CHANNEL="${LOG_PATH:?}/info.log"
+LOGGING_FILE=""
+INFO_CHANNEL=""
 init_log() {
     LOG_PATH="${1}"
     LOGGING_FILE="${LOG_PATH}/error.log"
@@ -19,11 +19,11 @@ info () {
 }
 
 console() {
-    echo "Error occured - ${1:()}. Please refer the logs for further information."
+    echo "Error occured - ${1:-()}. Please refer the logs for further information."
 }
 
 console_exit () {
-    echo "Error occured - ${1:()}. program will be exited. Please refer the logs for further information."
+    echo "Error occured - ${1:-()}. program will be exited. Please refer the logs for further information."
     exit 1
 }
 

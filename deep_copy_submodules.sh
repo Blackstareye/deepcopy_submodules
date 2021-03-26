@@ -71,6 +71,7 @@ clean_up() {
         # Using :? will cause the command to fail if the variable is null or unset. Similarly, you can use :- to set a default value if applicable.
         rm -rf "${SOURCE_LOCAL_URL:?}"/
     fi
+    #TODO enable clean_up_ini
 }
 
 # TODO trap clean_up ERR
