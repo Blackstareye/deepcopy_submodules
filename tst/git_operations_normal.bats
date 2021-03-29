@@ -31,14 +31,14 @@ function teardown() {
 }
 
 # with base local sem_okay sem_okay
-@test "set remove_submodules: " {
+@test "set 1 remove_submodules: " {
     section_list=("foo" "bar")
     URL_ARR=("foo","localhost")
     run remove_submodules  ${TMP_PATH}
     assert_success
     refute_output 
 }
-@test "set add_submodules_new_remote: " {
+@test "set 2 add_submodules_new_remote: " {
     section_list=("abc" "def")
     URL_ARR=("foo" "localhost")
     for url in "${section_list[@]}"; do
@@ -49,7 +49,7 @@ function teardown() {
     refute_output 
     /bin/rm  -rf ${TMP_PATH}
 }
-@test "set add_submodules_local: " {
+@test "set 3 add_submodules_local: " {
     section_list=("abc" "def")
     URL_ARR=("foo" "localhost")
     for url in "${section_list[@]}"; do
@@ -60,7 +60,7 @@ function teardown() {
     refute_output 
     /bin/rm  -rf ${TMP_PATH}
 }
-@test "set push_changes: " {
+@test "set 4 push_changes: " {
     section_list=("abc" "def")
     BASE_PATH="main_repo"
     URL_ARR=("foo" "localhost")
@@ -69,18 +69,18 @@ function teardown() {
     refute_output 
 }
 # with base local sem_okay sem_okay
-@test "set check if stub works: " {
+@test "set 5 check if stub works: " {
     # NOTE source instead of load, arrays have problems with load
     run test_foo foo 
     assert_success 
     assert_output --partial "successfully"
 }
-@test "set  check if git stub works: " {
+@test "set  6 check if git stub works: " {
     # NOTE source instead of load, arrays have problems with load
     run git remote foo "http://lorem/ipsum"
     assert_success 
 }
-@test "set  check if rm stub works: " {
+@test "set  7 check if rm stub works: " {
     # NOTE source instead of load, arrays have problems with load
     file="abc.bar"
     touch $file

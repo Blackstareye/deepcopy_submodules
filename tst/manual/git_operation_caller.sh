@@ -16,13 +16,18 @@ clear_logs
 source "git_operations.sh"
 source "tst/stub/test_stub.sh"
 
-tmp_folder="/tmp/tmp_folder"
-section_list=("abc" "def")
-URL_ARR=("foo" "localhost")
-mkdir -p $tmp_folder
-for url in "${section_list[@]}"; do
-    mkdir -p $tmp_folder/$url
-done
-add_submodules_new_remote $tmp_folder
-/bin/rm -rf $tmp_folder
+tmp_folder="/tmp/tmp_a"
+#section_list=("abc" "def")
+#URL_ARR=("foo" "")
+#mkdir -p $tmp_folder
+#for url in "${section_list[@]}"; do
+#    mkdir -p $tmp_folder/$url
+#done
+remove_submodules #$tmp_folder
+#section_list=("abc" "def")
+#add_submodules_new_remote $tmp_folder
+section_list=()
+#add_submodules_local $tmp_folder
+#push_changes $tmp_folder
+#/bin/rm -rf $tmp_folder
 # testing
