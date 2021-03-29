@@ -68,7 +68,7 @@ function setup() {
        # NOTE source instead of load, arrays have problems with load
     source "tst/validation_test_set.sh"
     declare -a firstcall_check=("true" "${PATH_sucess[3]}")
-    declare -a secondcall_check=("false" "${HTTPS_sem_sucess[0]}")
+    declare -a secondcall_check=("true" "${HTTPS_sem_sucess[0]}")
     run plausi_check "local" "${firstcall_check[1]}" #"${HTTPS_sem_sucess[1]}" 
     assert_success
     echo ${firstcall_check[*]}
@@ -84,7 +84,7 @@ function setup() {
     declare -a secondcall_check=("true" "${HTTPS_sem_sucess[0]}")
     run plausi_check "loci" "${firstcall_check[1]}" #"${HTTPS_sem_sucess[1]}" 
     assert_failure
-    assert_output --partial "Invalid First Param. Param needs to be 'local' or 'remote'"
+    assert_output --partial "Invalid First Param. Param needs to be 'local', 'ssh' or 'remote'"
     run plausi_check "${secondcall_check[1]}" 
     assert_success
     assert_equal "${output[*]}" "${secondcall_check[*]}"

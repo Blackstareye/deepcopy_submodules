@@ -4,7 +4,8 @@
 
 
 is_valid_path() {
-    if [[ -d ${1} ]]; then
+    var="${1/#\~/$HOME}"
+    if [[ -d ${var} ]]; then
         echo "true"
     else
         echo "false"
@@ -158,7 +159,13 @@ plausi_check() {
     
     if [[ $# -eq 1 ]]; then
         local_url=${1}
-        returnvalue=$(validate_param "false" "true" "${local_url}")
+        local tmp=$(get_type ${local_url})
+        local can__be_ssh="false"
+        if [[ "${tmp}" == "others" ]]; then
+            can__be_ssh="true"
+        fi
+        # NOTE here we can't proof if it is actually a wrong url or ssh -> so "can be ssh"
+        returnvalue=$(validate_param "false" "true" "${can__be_ssh}" "${local_url}")
         echo "${returnvalue}" "${local_url}"
         return 0
     fi

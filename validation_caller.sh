@@ -14,4 +14,4 @@ source "tst/validation_test_set.sh"
 echo ${HTTPS_syn_faulty[0]}
 #plausi_check "ssh" "localhost"
 #plausi_check "remote" "localhost"
-plausi_check "remote" "https://www.ecosia.org"
+plausi_check "ssh" "${HTTPS_sem_sucess[2]}"
