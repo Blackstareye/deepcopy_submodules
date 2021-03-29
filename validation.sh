@@ -19,21 +19,51 @@ checkhttp() {
         # echo "URL exists: $1"
         echo "true"
     else
-        #echo "given URL does not exist"
-        echo "false"
-        error "ERROR - checkhttp" "URL ${1}  does not response. Can't perform deep copy."
+        # try without head
+        if curl --output /dev/null --silent --fail "$1"; then
+            echo "true"
+        else
+            #given URL does not exist
+            echo "false"
+            error "ERROR - checkhttp" "URL ${1}  does not response. Can't perform deep copy."
+        fi
     fi
+}
+
+checkssh() {
+    # local server="$1"      # server IP
+    # local port=22                 # port
+    # local connect_timeout=5       # Connection timeout
+    # local command_output
+    
+    # command_output=$(ssh -q -o BatchMode=yes  -o StrictHostKeyChecking=no -o ConnectTimeout=$connect_timeout "$server" 'exit 0')
+    # if [[ -n $command_output ]]; then
+    #     info "SSH Connection to $server is possible"
+    #     echo "true"
+    # else
+    #     error "SSH CONNECTION FAULT" "SSH connection to $server over port $port is not possible"
+    #     echo "false"
+    # fi
+    info "WARNING EXPERIMANTEL FEATURE USE SSH" "WARNING SSH Can't be validated right now if connection is alive or not." 
+    echo "unknown"
 }
 
 checkurl() {
     local returnvalue
-    
+    local is_ssh="$3"
     case $1 in
         "http"|"https")
             returnvalue=$(checkhttp "$2")
         ;;
+        "ssh")
+            returnvalue=$(checkssh "$2")
+        ;;
         *)
-            error "ERROR - checkurl" "unknown type: ${1}"
+
+                error "ERROR - checkurl" "unknown type: ${1}."
+                #console "Please specify the protocoll (http, https) or use 'shell' instead of remote for 'ssh' connections"
+                returnvalue="false"
+
         ;;
     esac
     echo "${returnvalue}"
@@ -53,15 +83,8 @@ get_type() {
         echo "http"
         elif [[ $1 =~ ^https:// ]]; then
         echo "https"
-        
-        #elif [[ "$1" =~ "^(\w+@)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:([0-9]{1,5}|\w+.\w*))?(\/.*)?$" ]]; then
     else
-        result=$(echo "${1}" | grep -Eo '^(\w+@)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:([0-9]{1,5}|\w+.\w*))?(\/.*)?$')
-        if [[ -n ${result} ]]; then
-            echo "ssh"
-            
-        fi
-        #echo "nothing"
+        echo "other"
     fi
 }
 
@@ -71,7 +94,8 @@ validate_param() {
     #echo $@
     local is_remote=${2}
     local is_local=${1}
-    local local_url=${3}
+    local is_ssh=${3}
+    local local_url=${4}
     
     local is_valid
     local url_type
@@ -84,28 +108,25 @@ validate_param() {
         else
             info "URL STATUS = NOT VALID"
         fi
-        
-        elif [[ "${is_remote}" == true ]]; then
-        info "MODE  = REMOTE"
-        url_type=$(get_type "${local_url}")
-        if [[ "${url_type}" == "ssh" ]]; then
-            IS_SSH="true"
-            is_valid="true"
+    elif [[ "${is_remote}" == true ]]; then
+        info "INFO_ MODE REMOTE" "MODE  = REMOTE"
+        if [[ "${is_ssh}" == true ]]; then
+            url_type="ssh"
         else
-            is_valid=$(checkurl "${url_type}" "${local_url}")
+            url_type=$(get_type "${local_url}")
         fi
+        is_valid=$(checkurl "${url_type}" "${local_url}" "${is_ssh}")
+    
         
         if [[ "$is_valid" == true ]]; then
             info "CONNECTION  = EXIST"
-            
-            
-            if [[ "${IS_SSH}" == true ]]; then
+        
+        elif [[ "${is_valid}" == "unknown" ]]; then
+            if [[ "${is_ssh}" == true ]]; then
                 info "TYPE  = SSH"
-            else
-                info "TYPE  = WEB"
             fi
         else
-            info "CONNECTION  = NOT EXIST"
+            info "CONNECTION  = NOT VALID"
             info "CONNECTION  = deep copy can't be executed."
         fi
     else
@@ -131,6 +152,7 @@ plausi_check() {
     local key
     local is_local
     local is_remote
+    local is_ssh=false
     local local_url
     
     
@@ -157,6 +179,18 @@ plausi_check() {
             shift;
             shift;
         ;;
+        ssh| -s)
+            local_url="$2"
+            is_local=false
+            is_remote=true
+            is_ssh=true
+            shift;
+            shift;
+        ;;
+        --yes | -y)
+            info "SKIP QUESTION TRUE" "Skip Question Flag activated."
+            SKIP_QUESTIONS="true"
+        ;;
         help | -?)
             help
             shift;
@@ -164,9 +198,11 @@ plausi_check() {
         ;;
         *)    # unknown option
             POSITIONAL+=("$1") # save it in an array for later
+            error "INVALID FIRST PARAM" "Param needs to be 'local', 'ssh' or 'remote'. actual: ${1}"
+            console_exit "Invalid First Param. Param needs to be 'local', 'ssh' or 'remote'"
         ;;
     esac
     
-    returnvalue=$(validate_param ${is_local} ${is_remote} "${local_url}")
+    returnvalue=$(validate_param "${is_local}" "${is_remote}" "${is_ssh}" "${local_url}")
     echo "${returnvalue}" "${local_url}"
 }

@@ -1,0 +1,12 @@
+Experience Testing
+
+have two test cases
+
+manuals called "callers". 
+Those are good for calling your scripts and debugging your stuff
+Also they do a good pre testing job like generating  "expected output" reports.
+
+
+units: 
+ normal: normal behaviour
+ error: test exceptions and error cases
