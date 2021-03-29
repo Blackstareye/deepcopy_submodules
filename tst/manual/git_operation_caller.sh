@@ -13,4 +13,16 @@ mkdir -p ${LOG_PATH}
 init_log $LOG_PATH
 clear_logs
 
+source "git_operations.sh"
+source "tst/stub/test_stub.sh"
+
+tmp_folder="/tmp/tmp_folder"
+section_list=("abc" "def")
+URL_ARR=("foo" "localhost")
+mkdir -p $tmp_folder
+for url in "${section_list[@]}"; do
+    mkdir -p $tmp_folder/$url
+done
+add_submodules_new_remote $tmp_folder
+/bin/rm -rf $tmp_folder
 # testing

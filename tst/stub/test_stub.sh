@@ -74,3 +74,7 @@ sed() {
 }
 
 
+test_foo () {
+    echo "successfully injected"
+}
+

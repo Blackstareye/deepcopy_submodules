@@ -153,7 +153,7 @@ remove_submodules() {
     tmp_string="$*"
     command="task_remove_submodule"
     new_string="$command $(echo "$tmp_string")"
-    echo "$new_string"
+    #echo "$new_string"
     isolated_operation "$new_string" "revert_task_remove_submodules"
 }
 
@@ -163,7 +163,7 @@ add_submodules_new_remote() {
     tmp_string="$*"
     command="task_add_submodules_new_remote"
     new_string="$command $(echo "$tmp_string")"
-    echo "$new_string"
+    #echo "$new_string"
     isolated_operation "$new_string" "revert_task_add_submodules_new_remote"
 }
 
@@ -173,7 +173,7 @@ add_submodules_local() {
     tmp_string="$*"
     command="task_add_submodules_local"
     new_string="$command $(echo "$tmp_string")"
-    echo "$new_string"
+    #echo "$new_string"
     isolated_operation "$new_string" "revert_task_add_submodules_local"
 }
 push_changes() {
@@ -181,7 +181,7 @@ push_changes() {
     tmp_string="$*"
     command="task_push_changes"
     new_string="$command $(echo "$tmp_string")"
-    echo "$new_string"
+    #echo "$new_string"
     isolated_operation "$new_string" "revert_push_changes"
 }
 
