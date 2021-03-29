@@ -11,7 +11,9 @@ clear_logs
 source "validation.sh"
 source "tst/validation_test_set.sh"
 
+# shellcheck disable=SC2154
 echo ${HTTPS_sem_sucess[2]}
 #plausi_check "ssh" "localhost"
 #plausi_check "remote" "localhost"
+# shellcheck disable=SC2154
 plausi_check "remote" "${firstcall_check[0]}" "abc" "three"

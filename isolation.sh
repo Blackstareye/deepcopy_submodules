@@ -4,6 +4,7 @@ isolated_operation() {
     # an isolated operation is a operation with great a sideeffect
     # 1 param to be executed command
     # 2 call function if command failed
+    # shellcheck disable=2034
     error=$(eval "$1" 2>&1 > /dev/null)
     if [[ "$?" -ne 0 ]]; then
         eval '$2 $error'

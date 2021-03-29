@@ -25,6 +25,7 @@ source "isolation.sh"
 task_add_submodules_local() {
     cd "${1}" || { error "FAILURE USING CD" " ${1} was not sucessful"; console_exit; }
     local remote_url="${URL_ARR[1]}/${section}.git"
+    # shellcheck disable=SC2154
     for section in "${section_list[@]}"; do
         info "ADDING SUBMODULE LOCALLY"  "SUBMODULE: [${section}] with path: ${1}"
         remote_url="${URL_ARR[1]}/${section}.git"
