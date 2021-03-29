@@ -41,7 +41,7 @@ function setup() {
     # NOTE source instead of load, arrays have problems with load
     source "tst/validation_test_set.sh"
     declare -a firstcall_check=("true" "${PATH_sucess[2]}")
-    declare -a secondcall_check=("false" "${HTTPS_syn_faulty[0]}")
+    declare -a secondcall_check=("unknown" "${HTTPS_syn_faulty[0]}")
     run plausi_check "local" "${firstcall_check[1]}" #"${HTTPS_sem_sucess[1]}" 
     assert_success
     echo ${firstcall_check[*]}

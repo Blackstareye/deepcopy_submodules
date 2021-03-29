@@ -2,67 +2,48 @@
 # those are functionality tests
 
 function setup() {
+    load "/test_helper/bats-support/load"
     load "/test_helper/bats-asserts/load"
     load "test.conf"
     load "testhelper.sh"
-    load "validation_test_set.sh"
     # change directoy to script directory 
-    changeDir "SCRIPT_PATH"
+    changeDir "$SCRIPT_PATH"
     # load libs
     load "log.sh"
-    load "script_to_test.sh"
-    make_TMP_DIR TMP_PATH
-    make_TMP_DIR LOG_PATH
+    load "validation.sh"
+    make_TMP_DIR $TMP_PATH
+    make_TMP_DIR $LOG_PATH
 
-    ERROR_L="?/error.log"
-    INFO_L="?/info.log"
-    init_log "LOG_PATH"
+    ERROR_L="${LOG_PATH:?}/error.log"
+    INFO_L="${LOG_PATH:?}/info.log"
+    init_log "$LOG_PATH"
     clear_logs
 }
 
+
 # with base remote sem_okay sem_okay
-@test "set base: remote sem_okay sem_okay" {
-
+@test "one param" {
+    # NOTE source instead of load, arrays have problems with load
+    source "tst/validation_test_set.sh"
+    declare -a firstcall_check=("true" "${HTTPS_sem_sucess[0]}")
+    declare -a secondcall_check=("true" "${HTTPS_sem_sucess[1]}")
+    run plausi_check "remote" "${HTTPS_sem_sucess[0]}" #"${HTTPS_sem_sucess[1]}" 
+    assert_success
+    assert_equal "${output}" "${firstcall_check[*]}"
 }
-# BASE Input Paritioning
-@test "set 1 : remote, sem_okay, faulty" {
-    
-}
-# BASE Input Paritioning
-@test "set 2 : remote, sem_okay, syn_okay" {
-
-}
-@test "set 3 : local, sem_okay, sem_okay" {
-    
-}
-@test "set 4 : remote, syn_okay, sem_okay" {
-}
-@test "set 5 : remote, faulty, syn_okay" {
-
-}
-
-# with base local sem_okay sem_okay
-@test "set base: local path_okay remote_sem_okay" {
-
-}
-# BASE Input Paritioning
-@test "set 1 : local, path_okay, faulty" {
-    
-}
-# BASE Input Paritioning
-@test "set 2 : local, path_okay, syn_okay" {
-
-}
-@test "set 3 : local, path_okay, remote_sem_okay" {
-    
-}
-@test "set 4 : faulty, path_okay, remote_sem_okay" {
-    
-}
-@test "set 5 : remote, path_okay, remote_sem_okay" {
-}
-@test "set 6 : local, not_okay, remote_sem_okay" {
-
+# with base remote sem_okay sem_okay
+@test "two params" {
+    # NOTE source instead of load, arrays have problems with load
+    source "tst/validation_test_set.sh"
+    declare -a firstcall_check=("true" "${HTTPS_sem_sucess[0]}")
+    declare -a secondcall_check=("true" "${HTTPS_sem_sucess[1]}")
+    run plausi_check "remote" "${HTTPS_sem_sucess[0]}" #"${HTTPS_sem_sucess[1]}" 
+    assert_success
+    echo ${firstcall_check[*]}
+    assert_equal "${output}" "${firstcall_check[*]}"
+    run plausi_check "${HTTPS_sem_sucess[1]}" 
+    assert_success
+    assert_equal "${output[*]}" "${secondcall_check[*]}"
 }
 
 

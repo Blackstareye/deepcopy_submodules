@@ -8,7 +8,7 @@ declare -a SSH_syn_sucess=("user@domain.de" "user:password@domain.de" "domain.de
 declare -a HTTP_syn_sucess=("http://a.b.c" "http://domain:890" "a.b.c",)
 declare -a HTTPS_syn_sucess=("https://a.b.c" "https://domain:890" "https://a.b.c/test")
 
-declare -a SSH_sem_sucess=("localhost")
+declare -a SSH_sem_sucess=("localhost", "git@github.com")
 declare -a HTTPS_sem_sucess=("https://www.ecosia.org" "https://duckduckgo.com")
 
 #declare -a HTTP[sem_sucess]=("http://a.b.c" "http://domain:890" "a.b.c",)

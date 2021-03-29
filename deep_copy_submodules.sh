@@ -121,7 +121,11 @@ main() {
     
     set -- "${POSITIONAL[@]}" # restore positional parameters
     #  GET MODULES
-    
+    # TOBE TESTED
+    if [[ "${VALIDATION}" == "true" && "${IS_VALID_ARR[0]}" != "true" || "${IS_VALID_ARR[1]}" != "true" ]]; then
+        error "URLS not valid" "There are urls that are not valid: ${IS_VALID_ARR[0]}:${URL_ARR[0]} ; ${IS_VALID_ARR[1]}:${URL_ARR[1]} ; VALIDATION_FLAG=${VALIDATION}"
+        console_exit "URLS not valid"
+    fi
     if [[ ${IS_REMOTE} == "true" ]]; then
         
         #  IF REMOTE

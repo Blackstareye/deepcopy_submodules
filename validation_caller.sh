@@ -11,7 +11,7 @@ clear_logs
 source "validation.sh"
 source "tst/validation_test_set.sh"
 
-echo ${HTTPS_syn_faulty[0]}
+echo ${HTTPS_sem_sucess[2]}
 #plausi_check "ssh" "localhost"
 #plausi_check "remote" "localhost"
-plausi_check "ssh" "${HTTPS_sem_sucess[2]}"
+plausi_check "remote" "${firstcall_check[0]}" "abc" "three"

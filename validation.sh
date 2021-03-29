@@ -156,12 +156,16 @@ plausi_check() {
     local is_ssh=false
     local local_url
     
-    
+    if [[ $# -gt 3 ]]; then
+        echo "false" ""
+        error "INVALID VALIDATOR PARAM SIZE > 3" "Invalid count of params. Params (size: $#): ${*}"
+        console_exit "INVALID VALIDATOR PARAM SIZE > 3"
+    fi
     if [[ $# -eq 1 ]]; then
         local_url=${1}
         local tmp=$(get_type ${local_url})
         local can__be_ssh="false"
-        if [[ "${tmp}" == "others" ]]; then
+        if [[ "${tmp}" == "other" ]]; then
             can__be_ssh="true"
         fi
         # NOTE here we can't proof if it is actually a wrong url or ssh -> so "can be ssh"
