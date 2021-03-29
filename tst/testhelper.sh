@@ -29,4 +29,36 @@ make_TMP_DIR() {
         mkdir -p ${1}
     fi
 }
+
+check_path_file() {
+    if [[ -f "${1}" ]]; then
+        return 0
+    else
+        return 1
+    fi
+}
+check_path_dir() {
+  if [[ -d "${1}" ]]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+check_not_null() {
+  if [[ -n "${1}" ]]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+check_null() {
+  if [[ -z "${1}" ]]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
 #util_grep_test_result_content $1 $2

@@ -1,22 +1,16 @@
 #!/usr/bin/env bash
-
+# caller for ini parsing 
 source "config.conf"
 if [[ "$DEBUG" == "true" ]]; then
-    cd ${SCRIPT_PATH}
+    cd ${SCRIPT_PATH} || exit 1
 else
-    cd "${0%/*}"
+    cd "${0%/*}" || exit 1
 fi
 CWD_PATH="$(pwd)"
 
 source "log.sh"
 source "ini_parser.sh"
-
-if [[ "$DEBUG" == "true" ]]; then
-    cd ${SCRIPT_PATH}
-else
-    cd "${0%/*}"
-fi
-CWD_PATH="$(pwd)"
+source "tst/testhelper.sh"
 
 init_log "${LOG_PATH:-${CWD_PATH}}"
 if [[ "${CLEAR_LOGS}" == "true" ]]; then
@@ -46,11 +40,12 @@ create_test_output() {
 
 
 
-create_test_output
-a=$(realpath tst/test_result.tst)
-b=$(realpath "tst/ini_files/normal/test_10.ini")
-source "tst/testhelper.sh"
-util_grep_test_result_content "$a" "$b" > derp.txt
+#create_test_output
+#a=$(realpath tst/test_result.tst)
+#b=$(realpath "tst/ini_files/normal/test_10.ini")
+
+#util_grep_test_result_content "$a" "$b" > derp.txt
 #parse_ini "$1"
 #print_ini >> test_result.tst
 
+echo hello
