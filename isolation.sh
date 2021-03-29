@@ -10,9 +10,9 @@ isolated_operation() {
     fi
 }
 
-# revert_cat() {
-#     echo "called revert cat with \"$*\" "
-# }
+revert_cat() {
+    echo "called revert cat with \"$*\" "
+}
 
 
 

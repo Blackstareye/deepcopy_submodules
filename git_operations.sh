@@ -8,16 +8,40 @@
 # https://www.w3docs.com/snippets/git/how-to-remove-a-git-submodule.html
 # TODO NOTE: TOBETESTED
 
-isolated_operation() {
-    # an isolated operation is a operation with a sideeffect
-    # 1 param to be executed command
-    # 2 call function if command failed
-    error=$(eval "$1")
-    if [[ "$?" -ne 0 ]]; then
-        tmp_string=$($2)
-        eval "$tmp_string"
-    fi
+# isolated_operation() {
+#     # an isolated operation is a operation with a sideeffect
+#     # 1 param to be executed command
+#     # 2 call function if command failed
+#     error=$(eval "$1")
+#     if [[ "$?" -ne 0 ]]; then
+#         tmp_string=$($2)
+#         eval "$tmp_string"
+#     fi
+# }
+# load lib
+source "isolation.sh"
+
+# NOTE AND TODO TO BE TESTED
+task_add_submodules_local() {
+    cd "${1}" || { error "FAILURE USING CD" " ${1} was not sucessful"; console_exit; }
+    local remote_url="${URL_ARR[1]}/${section}.git"
+    for section in "${section_list[@]}"; do
+        info "ADDING SUBMODULE LOCALLY"  "SUBMODULE: [${section}] with path: ${1}"
+        remote_url="${URL_ARR[1]}/${section}.git"
+        git submodule add "${remote_url}"
+        git commit -m "Added the submodule ${section} to the project."
+    done
 }
+
+task_push_changes() {
+    cd "${1}"  || { error "FAILURE USING CD" " ${1} was not sucessful"; console_exit; }
+    local remote_url="${URL_ARR[1]}/${BASE_PATH}.git"
+    info "PUSH Changes of parent git repo"  "pushing local ${1} to ${remote_url}"
+    git remote add "${GIT_REMOTE_NAME}" "${remote_url}"
+    git push "${GIT_REMOTE_NAME}" "${GIT_REMOTE_BRANCH}"
+    info "PUSH Changes of parent git repo"  "Done pushing"
+}
+
 
 task_remove_submodule() {
     # revert tasks
@@ -79,6 +103,29 @@ task_add_submodules_new_remote() {
         git push "${GIT_REMOTE_NAME}" "${GIT_REMOTE_BRANCH}"
     done
 }
+
+## reverts
+
+
+
+revert_push_changes() {
+    info "REVERT push_changes" "Reverting task 'pushing changes'"
+    if [[ "${CREATE_TMP_FOLDER}" == "true" &&  -d "${TMP_PATH}" ]]; then
+        rm -rf ${TMP_PATH}
+    fi
+    error "GIT PUSH CHANGES FAILED" "Git Operation : Push Task was not possible ${1}"
+    console_exit "Git Operation : Push Task was not possible ${1}"
+}
+revert_task_add_submodules_local() {
+    info "REVERT task_add_submodules_local" "Reverting adding submodule to local copy"
+    if [[ "${CREATE_TMP_FOLDER}" == "true" &&  -d "${TMP_PATH}" ]]; then
+        rm -rf ${TMP_PATH}
+    fi
+    
+    error "GIT ADD SUBMODULE LOCAL FAILED" "Git Operation : Adding (local) Task was not possible ${1}"
+    console_exit "Git Operation : Adding (local) Task was not possible ${1}"
+}
+
 revert_task_add_submodules_new_remote() {
     info "REVERT add_submodules_new_remote" "Reverting adding submodules and abort task"
     if [[ "${CREATE_TMP_FOLDER}" == "true" &&  -d "${TMP_PATH}" ]]; then
@@ -117,6 +164,24 @@ add_submodules_new_remote() {
     new_string="$command $(echo "$tmp_string")"
     echo "$new_string"
     isolated_operation "$new_string" "revert_task_add_submodules_new_remote"
+}
+
+# NOTE AND TODO TO BE TESTED
+add_submodules_local() {
+    # template for isolation call
+    tmp_string="$*"
+    command="task_add_submodules_local"
+    new_string="$command $(echo "$tmp_string")"
+    echo "$new_string"
+    isolated_operation "$new_string" "revert_task_add_submodules_local"
+}
+push_changes() {
+    # template for isolation call
+    tmp_string="$*"
+    command="task_push_changes"
+    new_string="$command $(echo "$tmp_string")"
+    echo "$new_string"
+    isolated_operation "$new_string" "revert_push_changes"
 }
 
 
@@ -180,23 +245,23 @@ add_submodules_new_remote() {
 #     done
 # }
 
-# NOTE AND TODO TO BE TESTED
-add_submodules_local() {
-    cd "${1}" || { error "FAILURE USING CD" " ${1} was not sucessful"; console_exit; }
-    local remote_url="${URL_ARR[1]}/${section}.git"
-    for section in "${section_list[@]}"; do
-        info "ADDING SUBMODULE LOCALLY"  "SUBMODULE: [${section}] with path: ${1}"
-        remote_url="${URL_ARR[1]}/${section}.git"
-        git submodule add "${remote_url}"
-        git commit -m "Added the submodule ${section} to the project."
-    done
-}
+# # NOTE AND TODO TO BE TESTED
+# add_submodules_local() {
+#     cd "${1}" || { error "FAILURE USING CD" " ${1} was not sucessful"; console_exit; }
+#     local remote_url="${URL_ARR[1]}/${section}.git"
+#     for section in "${section_list[@]}"; do
+#         info "ADDING SUBMODULE LOCALLY"  "SUBMODULE: [${section}] with path: ${1}"
+#         remote_url="${URL_ARR[1]}/${section}.git"
+#         git submodule add "${remote_url}"
+#         git commit -m "Added the submodule ${section} to the project."
+#     done
+# }
 
-push_changes() {
-    cd "${1}"  || { error "FAILURE USING CD" " ${1} was not sucessful"; console_exit; }
-    local remote_url="${URL_ARR[1]}/${BASE_PATH}.git"
-    info "PUSH Changes of parent git repo"  "pushing local ${1} to ${remote_url}"
-    git remote add "${GIT_REMOTE_NAME}" "${remote_url}"
-    git push "${GIT_REMOTE_NAME}" "${GIT_REMOTE_BRANCH}"
-    info "PUSH Changes of parent git repo"  "Done pushing"
-}
+# push_changes() {
+#     cd "${1}"  || { error "FAILURE USING CD" " ${1} was not sucessful"; console_exit; }
+#     local remote_url="${URL_ARR[1]}/${BASE_PATH}.git"
+#     info "PUSH Changes of parent git repo"  "pushing local ${1} to ${remote_url}"
+#     git remote add "${GIT_REMOTE_NAME}" "${remote_url}"
+#     git push "${GIT_REMOTE_NAME}" "${GIT_REMOTE_BRANCH}"
+#     info "PUSH Changes of parent git repo"  "Done pushing"
+# }
