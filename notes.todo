@@ -10,3 +10,9 @@ Also they do a good pre testing job like generating  "expected output" reports.
 units: 
  normal: normal behaviour
  error: test exceptions and error cases
+
+
+
+urls:
+url1: git project
+url2: only user / orga

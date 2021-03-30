@@ -119,11 +119,33 @@ parse_ini() {
          error "ERROR TMP INI FILE" "No ini file given as input. Please put the ini file as first (and only!) parameter"
         console_exit "error with INI file - no file to parse given"
     else
-        error "ERROR TMP INI FILE" "Can't find ini on path: ${TMP_FILE_PATH} or ${1:-()}"
+        error "ERROR TMP INI FILE" "Can't find ini on path: ${TMP_FILE_PATH} or ${1}"
         console_exit "error with INI file"
     fi
 }
 
+
+parse_ini_without_preparsing() {
+     if [ "$#" -eq "1" ] && [ -f "$1" ]; then
+            filename="${1}"
+            get_ini_sections "$filename"
+            # shellcheck disable=SC2034
+            section_list=($(read_ini_sections "${filename}"))
+            
+            info "INFO - Segments of Ini " "$(declare -p sections)"
+        echo "${section_list[@]}"
+        #clean_up_ini
+    elif [ "$#" -gt "1" ]; then
+         error "ERROR TMP INI FILE" "Can only parse ONE file at a time. Please take only one file as input"
+        console_exit "error with INI file - multiple files but only one expected"
+    elif [ "$#" -eq "0" ]; then
+         error "ERROR TMP INI FILE" "No ini file given as input. Please put the ini file as first (and only!) parameter"
+        console_exit "error with INI file - no file to parse given"
+    else
+        error "ERROR TMP INI FILE" "Can't find ini on path: ${TMP_FILE_PATH} or ${1}"
+        console_exit "error with INI file"
+    fi
+}
 ## auxilary methods
 give_value() {
     # don't question why this needs to be written so..
