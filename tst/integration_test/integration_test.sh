@@ -1,29 +1,49 @@
 #!/usr/bin/env bash
 # this is the integration test of the project
 # this is the integration test ini - tst/integration_test/integration_test.ini
-INTEGRATION_TEST_INI="~/integration_test.ini"
+# shellcheck disable=SC2088
+INTEGRATION_TEST_CONF="~/integration_test.conf"
 REPORT_FILE=$(realpath "tst/report/integration_test.params")
 VISIBLE_PASSWORD="false"
 #cd "${0%/*}" || exit 1
 
+get_file_content() {
+    # shellcheck source=/dev/null
+    source "${INTEGRATION_TEST_CONF//\~/$HOME}"
+}
+
 give_values() {
     local topic="$1"
-    local tmp=""
-    shift
-    arg=("${@}")
+    local tmp
+    local expression
+    
     declare -a response
-    for request in "${arg[@]}"; do
-        tmp="$(give_value "$topic" "$request")"
-        response+=("${tmp:-"_"}")
-    done
+    expression="${topic}_url1"
+    tmp="${!expression}"
+    response+=("${tmp:-"_"}")
+    expression="${topic}_url2"
+    tmp="${!expression}"
+    response+=("${tmp:-"_"}")
+    expression="${topic}_user1"
+    tmp="${!expression}"
+    response+=("${tmp:-"_"}")
+    expression="${topic}_pw1"
+    tmp="${!expression}"
+    response+=("${tmp:-"_"}")
+    expression="${topic}_user2"
+    tmp="${!expression}"
+    response+=("${tmp:-"_"}")
+    expression="${topic}_pw2"
+    tmp="${!expression}"
+    response+=("${tmp:-"_"}")
     echo "${response[*]}"
 }
 
 get_ssh() {
-    setup
-    arguments=("sshtest" "url1" "url2" "user1" "pw1" "user2" "pw2")
+    argument="sshtest"
     #give_values
-    values=($(give_values ${arguments[*]}))
+    # shellcheck disable=2207
+    values=($(give_values ${argument}))
     if [[ "${VISIBLE_PASSWORD}" == "false" ]]; then
         # obfuscate passwords
         values[3]="*********"
@@ -35,10 +55,10 @@ get_ssh() {
 }
 
 get_local_https() {
-    setup
-    arguments=("localhttpstest" "url1" "url2" "user1" "pw1" "user2" "pw2")
+    argument="localhttpstest"
     #give_values
-    values=($(give_values ${arguments[*]}))
+    # shellcheck disable=2207
+    values=($(give_values ${argument}))
     if [[ "${VISIBLE_PASSWORD}" == "false" ]]; then
         # obfuscate passwords
         values[3]="*********"
@@ -49,10 +69,10 @@ get_local_https() {
     echo "for url2 - user/password: ${values[4]:-"-"}/${values[5]:-"-"}"
 }
 get_local_ssh() {
-    setup
-    arguments=("localsshtest" "url1" "url2" "user1" "pw1" "user2" "pw2")
+    argument="localsshtest"
     #give_values
-    values=($(give_values ${arguments[*]}))
+    # shellcheck disable=2207
+    values=($(give_values ${argument}))
     if [[ "${VISIBLE_PASSWORD}" == "false" ]]; then
         # obfuscate passwords
         values[3]="*********"
@@ -63,10 +83,10 @@ get_local_ssh() {
     echo "for url2 - user/password: ${values[4]:-"-"}/${values[5]:-"-"}"
 }
 get_remote_https_test() {
-    setup
-    arguments=("remotehttpstest" "url1" "url2" "user1" "pw1" "user2" "pw2")
+    argument="remotehttpstest"
     #give_values
-    values=($(give_values ${arguments[*]}))
+    # shellcheck disable=2207
+    values=($(give_values ${argument}))
     if [[ "${VISIBLE_PASSWORD}" == "false" ]]; then
         # obfuscate passwords
         values[3]="*********"
@@ -78,7 +98,9 @@ get_remote_https_test() {
 }
 
 load_lib() {
+    # shellcheck disable=1091
     source "log.sh"
+    # shellcheck disable=1091
     source "ini_parser.sh"
 }
 
@@ -98,11 +120,7 @@ setup () {
     get_log
     get_file_content
 }
-get_file_content() {
-    TMP_PATH="/tmp"
-    x="${INTEGRATION_TEST_INI//\~/$HOME}"
-    parse_ini_without_preparsing $x > /dev/null
-}
+
 
 interrogate() {
     echo "Welcome to the integration testing - Please select the way you want to test:"
@@ -142,9 +160,11 @@ interrogate() {
     done
 }
 
+setup
 if [[ "$1" == "-s" ]]; then
-    echo "" > "$REPORT_FILE"
     
+    echo "" > "$REPORT_FILE"
+    # shellcheck disable=SC2129
     echo "SSH Test 1:" >> "$REPORT_FILE"
     echo "============" >> "$REPORT_FILE"
     get_ssh >> "$REPORT_FILE"
