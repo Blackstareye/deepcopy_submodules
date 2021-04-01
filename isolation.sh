@@ -6,6 +6,7 @@ isolated_operation() {
     # 2 call function if command failed
     # shellcheck disable=2034
     error=$(eval "$1" 2>&1 > /dev/null)
+    # shellcheck disable=SC2181
     if [[ "$?" -ne 0 ]]; then
         eval '$2 $error'
     fi

@@ -103,6 +103,7 @@ parse_ini() {
             filename="${TMP_FILE_PATH}"
             get_ini_sections "$filename"
             # shellcheck disable=SC2034
+            # shellcheck disable=SC2207
             section_list=($(read_ini_sections "${filename}"))
             
             info "INFO - Segments of Ini " "$(declare -p sections)"
@@ -130,6 +131,7 @@ parse_ini_without_preparsing() {
             filename="${1}"
             get_ini_sections "$filename"
             # shellcheck disable=SC2034
+            # shellcheck disable=SC2207
             section_list=($(read_ini_sections "${filename}"))
             
             info "INFO - Segments of Ini " "$(declare -p sections)"
@@ -150,20 +152,21 @@ parse_ini_without_preparsing() {
 give_value() {
     # don't question why this needs to be written so..
     # it does its job
+    # shellcheck disable=SC2046
     echo -e $(eval echo $\{configuration_"${1}"["$2"]\})
 }
 
 print_ini() {
     for section in "${section_list[@]}"; do
         echo "[${section}]"
-        for key in $(eval echo $\{'!'configuration_${section}[@]\}); do
-            echo -e "  ${key} = $(eval echo $\{configuration_${section}[$key]\}) " #(access it using $(echo $\{configuration_${section}[$key]\}))"
+        for key in $(eval echo $\{'!'configuration_"${section}"[@]\}); do
+            echo -e "  ${key} = $(eval echo $\{configuration_"${section}"[$key]\}) " #(access it using $(echo $\{configuration_${section}[$key]\}))"
         done
     done
 }
 
 print_ini_auto() {
-    parse_ini $1 > /dev/null
+    parse_ini "$1" > /dev/null
     print_ini
     clean_up_ini
 }

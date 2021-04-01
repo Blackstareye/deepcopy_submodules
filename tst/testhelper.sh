@@ -19,14 +19,15 @@ util_grep_test_result_content() {
 
 changeDir() {
     # let cwd be the actual  directory
-    cd ${1}
+    cd "${1}" || exit
+    # shellcheck disable=SC2034
     CWD_PATH="$(pwd)"
 }
 
 
 make_TMP_DIR() {
     if [[ ! -d "${1}" ]]; then
-        mkdir -p ${1}
+        mkdir -p "${1}"
     fi
 }
 

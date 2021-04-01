@@ -141,7 +141,7 @@ task_add_submodules_new_remote() {
 revert_push_changes() {
     info "REVERT push_changes" "Reverting task 'pushing changes'"
     if [[ "${CREATE_TMP_FOLDER}" == "true" &&  -d "${TMP_PATH}" ]]; then
-        rm -rf ${TMP_PATH}
+        rm -rf "${TMP_PATH}"
     fi
     error "GIT PUSH CHANGES FAILED" "Git Operation : Push Task was not possible ${1}"
     console_exit "Git Operation : Push Task was not possible ${1}"
@@ -149,7 +149,7 @@ revert_push_changes() {
 revert_task_add_submodules_local() {
     info "REVERT task_add_submodules_local" "Reverting adding submodule to local copy"
     if [[ "${CREATE_TMP_FOLDER}" == "true" &&  -d "${TMP_PATH}" ]]; then
-        rm -rf ${TMP_PATH}
+        rm -rf "${TMP_PATH}"
     fi
     
     error "GIT ADD SUBMODULE LOCAL FAILED" "Git Operation : Adding (local) Task was not possible ${1}"
@@ -159,7 +159,7 @@ revert_task_add_submodules_local() {
 revert_task_add_submodules_new_remote() {
     info "REVERT add_submodules_new_remote" "Reverting adding submodules and abort task"
     if [[ "${CREATE_TMP_FOLDER}" == "true" &&  -d "${TMP_PATH}" ]]; then
-        rm -rf ${TMP_PATH}
+        rm -rf "${TMP_PATH}"
     fi
     
     error "GIT ADD SUBMODULE FAILED" "Git Operation : Adding Task was not possible ${1}"
@@ -171,7 +171,7 @@ revert_task_add_submodules_new_remote() {
 revert_task_remove_submodules() {
     info "REVERT REMOVE SUBMODULES" "Reverting Submodule and abort task"
     if [[ "${CREATE_TMP_FOLDER}" == "true" &&  -d "${TMP_PATH}" ]]; then
-        rm -rf ${TMP_PATH}
+        rm -rf "${TMP_PATH}"
     fi
     
     error "GIT REMOVE SUBMODULE FAILED" "Git Operation : Removing Task was not possible ${1}"
@@ -181,7 +181,7 @@ remove_submodules() {
     # template for isolation call
     tmp_string="$*"
     command="task_remove_submodule"
-    new_string="$command $(echo "$tmp_string")"
+    new_string="$command $("$tmp_string")"
     #echo "$new_string"
     isolated_operation "$new_string" "revert_task_remove_submodules"
 }
@@ -191,7 +191,7 @@ add_submodules_new_remote() {
     # template for isolation call
     tmp_string="$*"
     command="task_add_submodules_new_remote"
-    new_string="$command $(echo "$tmp_string")"
+    new_string="$command $("$tmp_string")"
     #echo "$new_string"
     isolated_operation "$new_string" "revert_task_add_submodules_new_remote"
 }
@@ -201,7 +201,7 @@ add_submodules_local() {
     # template for isolation call
     tmp_string="$*"
     command="task_add_submodules_local"
-    new_string="$command $(echo "$tmp_string")"
+    new_string="$command $("$tmp_string")"
     #echo "$new_string"
     isolated_operation "$new_string" "revert_task_add_submodules_local"
 }
@@ -209,7 +209,7 @@ push_changes() {
     # template for isolation call
     tmp_string="$*"
     command="task_push_changes"
-    new_string="$command $(echo "$tmp_string")"
+    new_string="$command $("$tmp_string")"
     #echo "$new_string"
     isolated_operation "$new_string" "revert_push_changes"
 }

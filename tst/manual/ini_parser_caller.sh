@@ -8,8 +8,11 @@ else
 fi
 CWD_PATH="$(pwd)"
 
+# shellcheck disable=1091
 source "log.sh"
+# shellcheck disable=1091
 source "ini_parser.sh"
+# shellcheck disable=1091
 source "tst/testhelper.sh"
 
 init_log "${LOG_PATH:-${CWD_PATH}}"
@@ -20,9 +23,7 @@ if [[ "${CLEAR_LOGS}" == "true" ]]; then
     clear
 fi
 
-#parse_ini ${1}
 
-#give_value "tinysubproject" "url"
 
 
 #print
