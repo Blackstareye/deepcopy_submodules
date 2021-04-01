@@ -37,21 +37,21 @@ task_add_submodules_local() {
         git commit -m "Added the submodule ${section} to the project." || { error "FAILURE USING git commit -m  ${section}  was not sucessful"; return 1; }
     done
 }
-task_clone_from_remote() {
+
+# needs to parameter
+# 1. The remote url
+# 2. TMP_PATH -> place for the clone repo
+task_clone_remote() {
     # TODO realize clone
     echo "TODO"
-    # if [[ $# -ne 2 ]]; then
-    #     { error "Cloning from Remote Task - PARAMS Size is not 2" "PARAMS Size is not 1 it is: $#"; return 1; }
-    # fi
-    # #cd "${1}" || { error "FAILURE USING CD" " ${1} was not sucessful"; console_exit; }
-    # local remote_url="${URL_ARR[1]}/${section}.git"
-    # # shellcheck disable=SC2154
-    # for section in "${section_list[@]}"; do
-    #     info "ADDING SUBMODULE LOCALLY"  "SUBMODULE: [${section}] with path: ${1}"
-    #     remote_url="${URL_ARR[1]}/${section}.git"
-    #     git submodule add "${remote_url}" || { error "FAILURE USING submodule add ${remote_url} was not sucessful"; return 1; }
-    #     git commit -m "Added the submodule ${section} to the project." || { error "FAILURE USING git commit -m  ${section}  was not sucessful"; return 1; }
-    # done
+    if [[ $# -ne 2 ]]; then
+        { error "Cloning from Remote Task - PARAMS Size is not 2" "PARAMS Size is not 1 it is: $#"; return 1; }
+    fi
+    local remote_url="${1}"
+    git clone "${remote_url}" "${2}"|| { error "FAILURE while CLONING" "cloning git repo from ${remote_url}  to tmp repo place $2"; return 1; }
+    # Change LOCAL
+    # shellcheck disable=SC2034
+    SOURCE_LOCAL_URL="${2}/tmp_repo"
 }
 
 task_push_changes() {
@@ -68,7 +68,7 @@ task_push_changes() {
 
 
 task_remove_submodule() {
-
+    
     if [[ $# -ne 1 ]]; then
         { error "Remove Submodule  Task - PARAMS Size is not 1" "PARAMS Size is not 1 it is: $#"; return 1; }
     fi
@@ -136,7 +136,14 @@ task_add_submodules_new_remote() {
 
 ## reverts
 
-
+revert_clone_remote() {
+    info "REVERT clone" "Reverting task 'clone from remote'"
+    if [[ "${CREATE_TMP_FOLDER}" == "true" &&  -d "${TMP_PATH}" ]]; then
+        rm -rf "${TMP_PATH}"
+    fi
+    error "GIT CLONE CHANGES FAILED" "Git Operation : Clone Task was not possible ${1}"
+    console_exit "Git Operation : Clone Task was not possible ${1}"
+}
 
 revert_push_changes() {
     info "REVERT push_changes" "Reverting task 'pushing changes'"
@@ -164,7 +171,7 @@ revert_task_add_submodules_new_remote() {
     
     error "GIT ADD SUBMODULE FAILED" "Git Operation : Adding Task was not possible ${1}"
     console_exit "Git Operation : Adding Task was not possible ${1}"
-
+    
 }
 
 
@@ -217,56 +224,65 @@ push_changes() {
     #echo "$new_string"
     isolated_operation "$new_string" "revert_push_changes"
 }
+clone_remote() {
+    # template for isolation call
+    tmp_string="$*"
+    command="task_clone_remote"
+    # shellcheck disable=SC2116
+    new_string="$command $(echo "$tmp_string")"
+    #echo "$new_string"
+    isolated_operation "$new_string" "revert_clone_remote"
+}
 
 
 
 
-    # local submodule=""
-    
-    # # change to base git
-    # cd "${1}"  || { error "FAILURE USING CD" " ${1} was not sucessful"; console_exit; }
-    
-    # local removepath="${1}/${submodule}"
-    
-    # info "RM gitmodules" "Removing ${1}/${GIT_MODULE_FILE}"
-    
-    # # remove .gitmodules
-    # rm "${1}/${GIT_MODULE_FILE}"
-    
-    
-    # # edit .config
-    # local gitconfig_file="${1}/.git/config"
-    # local git_module_folder="${1}/.git/modules/"
-    # info "SED editing git config" "Removing Submodule entries in ${gitconfig_file}"
-    # # which  ,+2d -> delete line + 2 following lines
-    # sed -i '/\[submodule .*\]/,+2d' "${gitconfig_file}"
-    # # unstaging submodule cache
-    # # shellcheck disable=SC2154
-    # for section in "${section_list[@]}"; do
-    #     info "GITMODULE REMOVING - SUBMODULE"  "[${section}]"
-    #     submodule="${section}"
-    
-    #     # remove submodule folder
-    #     removepath="${1}/${submodule}"
-    #     info "GITMODULE REMOVING - SUBMODULE Remove"  "[${section}] Remove Submodule folder in ${removepath}"
-    #     git rm -r --cached "${removepath}"
-    #     info "GITMODULE REMOVING - SUBMODULE Remove"  "[${section}] Remove Submodule Cache folder in ${git_module_folder}/${section}"
-    #     rm -rf "${git_module_folder:?}/${section:?}"
-    
-    #     # commit changes
-    #     info "GITMODULE REMOVING - Commit changes"  "[${section}] Commit Changes"
-    #     git commit -m "Removed submodule ${section}"
-    
-    #     # remove submodule folder
-    #     info "GITMODULE REMOVING - Remove submodule folder"  "[${section}] remove folder: ${removepath}"
-    #     rm -rf  "${removepath}"
-    # done
-    # info "GITMODULE REMOVING" "Done Removing (${section_list[*]})"
+# local submodule=""
+
+# # change to base git
+# cd "${1}"  || { error "FAILURE USING CD" " ${1} was not sucessful"; console_exit; }
+
+# local removepath="${1}/${submodule}"
+
+# info "RM gitmodules" "Removing ${1}/${GIT_MODULE_FILE}"
+
+# # remove .gitmodules
+# rm "${1}/${GIT_MODULE_FILE}"
+
+
+# # edit .config
+# local gitconfig_file="${1}/.git/config"
+# local git_module_folder="${1}/.git/modules/"
+# info "SED editing git config" "Removing Submodule entries in ${gitconfig_file}"
+# # which  ,+2d -> delete line + 2 following lines
+# sed -i '/\[submodule .*\]/,+2d' "${gitconfig_file}"
+# # unstaging submodule cache
+# # shellcheck disable=SC2154
+# for section in "${section_list[@]}"; do
+#     info "GITMODULE REMOVING - SUBMODULE"  "[${section}]"
+#     submodule="${section}"
+
+#     # remove submodule folder
+#     removepath="${1}/${submodule}"
+#     info "GITMODULE REMOVING - SUBMODULE Remove"  "[${section}] Remove Submodule folder in ${removepath}"
+#     git rm -r --cached "${removepath}"
+#     info "GITMODULE REMOVING - SUBMODULE Remove"  "[${section}] Remove Submodule Cache folder in ${git_module_folder}/${section}"
+#     rm -rf "${git_module_folder:?}/${section:?}"
+
+#     # commit changes
+#     info "GITMODULE REMOVING - Commit changes"  "[${section}] Commit Changes"
+#     git commit -m "Removed submodule ${section}"
+
+#     # remove submodule folder
+#     info "GITMODULE REMOVING - Remove submodule folder"  "[${section}] remove folder: ${removepath}"
+#     rm -rf  "${removepath}"
+# done
+# info "GITMODULE REMOVING" "Done Removing (${section_list[*]})"
 #}
 
 # # NOTE AND TODO TO BE TESTED
 # add_submodules_new_remote() {
-    
+
 #     local remote_url="${URL_ARR[1]}/${section}.git"
 #     for section in "${section_list[@]}"; do
 #         info "PUBLISHING TO NEW REMOTE"  "SUBMODULE: [${section}] changing directory ${1}/${section}"

@@ -127,15 +127,17 @@ main() {
         console_exit "URLS not valid"
     fi
     if [[ ${IS_REMOTE} == "true" ]]; then
-        
-        #  IF REMOTE
-        #  check out  , perform, delete
-        #  ask where to put the folder
-        #  ENTER=local folder
-        # TODO
-        # SOURCE_LOCAL fill then path
-        echo remote
-        # BASE_PATH="$(basename ${URL_ARR[0]})"
+         
+         local target="${TMP_PATH}/tmp_repo"
+         mkdir -p "$target" 
+         # git remote 
+        clone_remote "${URL_ARR[0]}" ${target}
+        SOURCE_LOCAL_URL=${target}
+        BASE_PATH="$(basename "${target}")"
+        # tmp folder is already created
+        CREATE_TMP_FOLDER="false"
+        declare -p SOURCE_LOCAL_URL
+
     elif [[ ${IS_LOCAL} == "true" ]]; then
         SOURCE_LOCAL_URL=${URL_ARR[0]}
         BASE_PATH="$(basename "${URL_ARR[0]}")"
