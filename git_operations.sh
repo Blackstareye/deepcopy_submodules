@@ -48,8 +48,7 @@ task_clone_remote() {
     fi
     local remote_url="${1}"
     local local_target="${2}"
-
-    git clone "${remote_url}" "$local_target" || { error "FAILURE while CLONING" "cloning git repo from ${remote_url}  to tmp repo place $local_target"; return 1; }
+    git clone "${remote_url}" "$local_target" || { error "FAILURE while CLONING" "cloning git repo from ${remote_url}  to tmp repo place $local_target."; return 1; }
 }
 
 task_push_changes() {

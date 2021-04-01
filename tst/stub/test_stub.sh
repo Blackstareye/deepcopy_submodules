@@ -53,6 +53,11 @@ git() {
             check_not_null "${argument[1]}" && check_not_null "${argument[1]}"
             return $?
         ;;
+        "clone")
+            #check_path_dir "$3"
+            check_not_null "${argument[1]}" && check_not_null "${argument[2]}" && mkdir -p "${argument[2]}" && mkdir -p "${argument[2]}"/.git/ && touch ${argument[2]}/.gitmodules && touch ${argument[2]}/README.md
+            return $?
+        ;;
         *)
         ;;
     esac

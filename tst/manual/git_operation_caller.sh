@@ -34,9 +34,15 @@ source "tst/stub/test_stub.sh"
 #push_changes $tmp_folder
 #/bin/rm -rf $tmp_folder
 # testing
-    # section_list=("tinysubproject")
-    # URL_ARR=("foo","localhost")
-    # mkdir -p "/tmp/tst/unit_test"
-    # cp -r "tst/testpackage/." "/tmp/tst/unit_test/"
-    # remove_submodules  "/tmp/tst/unit_test/tinyproject"
-    # rm -r "/tmp/tst/unit_test/"
+# section_list=("tinysubproject")
+# URL_ARR=("foo","localhost")
+# mkdir -p "/tmp/tst/unit_test"
+# cp -r "tst/testpackage/." "/tmp/tst/unit_test/"
+# remove_submodules  "/tmp/tst/unit_test/tinyproject"
+# rm -r "/tmp/tst/unit_test/"
+section_list=("abc" "def")
+TMP_PATH="/tmp/tst/unit_testing/"
+mkdir -p ${TMP_PATH} 
+target="${TMP_PATH}/temporino"
+URL_ARR=("https://github.com/Blackstareye/Random-Pokemon-Generator" "duh")
+clone_remote  ${URL_ARR[0]} $target

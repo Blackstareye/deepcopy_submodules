@@ -144,3 +144,27 @@ function teardown() {
     assert_failure
     assert_output --partial "Error occured - Git Operation : Adding Task was not possible ."
 }
+@test "set 17 clone repo remote - zero params: " {
+    URL_ARR=("localhost" "localhost")
+    target="${TMP_PATH}/temporino"
+    run clone_remote 
+    #run clone_remote  ${URL_ARR[0]} $target
+    assert_failure
+    assert_output --partial "Error occured - Git Operation : Clone Task was not possible ."
+}
+
+@test "set 18 clone repo remote  - more than one param" {
+    URL_ARR=("localhost" "localhost")
+    target="${TMP_PATH}/temporino"
+    run clone_remote "lorem" "ipsum" "set dolor"
+    #run clone_remote  ${URL_ARR[0]} $target
+    assert_failure
+    assert_output --partial "Error occured - Git Operation : Clone Task was not possible ."
+}
+@test "set 19 clone repo remote  - url set is empty" {
+    section_list=("foo" "bar")
+    URL_ARR=()
+    run clone_remote  "localhost" "${TMP_PATH}"
+    assert_success
+    refute_output
+}

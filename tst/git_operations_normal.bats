@@ -92,3 +92,19 @@ function teardown() {
     /bin/rm $file
     [[ ! -f  $file ]]
 }
+
+@test "set  8 Clone Repo: " {
+    # NOTE source instead of load, arrays have problems with load
+    section_list=("abc" "def")
+    target="${TMP_PATH}/temporino"
+    URL_ARR=("https://github.com/Blackstareye/Random-Pokemon-Generator" "duh")
+    run clone_remote  ${URL_ARR[0]} $target
+    assert_success
+    refute_output 
+    echo $target
+    [[ -d $target/ ]]
+    [[ -f $target/.gitmodules ]]
+    [[ -d $target/.git ]]
+    [[ -f $target/README.md ]]
+    rm -r $target
+}
