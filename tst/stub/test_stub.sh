@@ -2,6 +2,7 @@
 # this is the stub for git operations
 
 ## called from SCRIPT_PATH
+# shellcheck disable=SC1091
 source "tst/testhelper.sh"
 
 git() {

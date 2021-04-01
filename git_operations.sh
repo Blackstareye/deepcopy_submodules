@@ -43,15 +43,13 @@ task_add_submodules_local() {
 # 2. TMP_PATH -> place for the clone repo
 task_clone_remote() {
     # TODO realize clone
-    echo "TODO"
     if [[ $# -ne 2 ]]; then
         { error "Cloning from Remote Task - PARAMS Size is not 2" "PARAMS Size is not 1 it is: $#"; return 1; }
     fi
     local remote_url="${1}"
-    git clone "${remote_url}" "${2}"|| { error "FAILURE while CLONING" "cloning git repo from ${remote_url}  to tmp repo place $2"; return 1; }
-    # Change LOCAL
-    # shellcheck disable=SC2034
-    SOURCE_LOCAL_URL="${2}/tmp_repo"
+    local local_target="${2}"
+
+    git clone "${remote_url}" "$local_target" || { error "FAILURE while CLONING" "cloning git repo from ${remote_url}  to tmp repo place $local_target"; return 1; }
 }
 
 task_push_changes() {

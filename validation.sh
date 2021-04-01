@@ -45,7 +45,7 @@ checkssh() {
     #     error "SSH CONNECTION FAULT" "SSH connection to $server over port $port is not possible"
     #     echo "false"
     # fi
-    info "WARNING EXPERIMANTEL FEATURE USE SSH" "WARNING SSH Can't be validated right now if connection is alive or not." 
+    info "WARNING EXPERIMANTEL FEATURE USE SSH" "WARNING SSH Can't be validated right now if connection is alive or not."
     echo "unknown"
 }
 
@@ -54,17 +54,25 @@ checkurl() {
     local is_ssh="$3"
     case $1 in
         "http"|"https")
-            returnvalue=$(checkhttp "$2")
+            if [[ ${TEST_CONNECTIONS} == "true" ]]; then
+                returnvalue=$(checkhttp "$2")
+            else
+                returnvalue="true"
+            fi
         ;;
         "ssh")
-            returnvalue=$(checkssh "$2")
+            if [[ ${TEST_CONNECTIONS} == "true" ]]; then
+                returnvalue=$(checkssh "$2")
+            else
+                returnvalue="true"
+            fi
         ;;
         *)
-
-                error "ERROR - checkurl" "unknown type: ${1}."
-                #console "Please specify the protocoll (http, https) or use 'shell' instead of remote for 'ssh' connections"
-                returnvalue="false"
-
+            
+            error "ERROR - checkurl" "unknown type: ${1}."
+            #console "Please specify the protocoll (http, https) or use 'shell' instead of remote for 'ssh' connections"
+            returnvalue="false"
+            
         ;;
     esac
     echo "${returnvalue}"
@@ -100,40 +108,43 @@ validate_param() {
     
     local is_valid
     local url_type
-    
-    if [[ "${is_local}" == true ]]; then
-        info "MODE  = LOCAL"
-        is_valid=$(is_valid_path "${local_url}")
-        if [[ ${is_valid} == "true" ]]; then
-            info "URL STATUS = VALID"
-        else
-            info "URL STATUS = NOT VALID"
-        fi
-    elif [[ "${is_remote}" == true ]]; then
-        info "INFO_ MODE REMOTE" "MODE  = REMOTE"
-        if [[ "${is_ssh}" == true ]]; then
-            url_type="ssh"
-        else
-            url_type=$(get_type "${local_url}")
-        fi
-        is_valid=$(checkurl "${url_type}" "${local_url}" "${is_ssh}")
-    
-        
-        if [[ "$is_valid" == true ]]; then
-            info "CONNECTION  = EXIST"
-        
-        elif [[ "${is_valid}" == "unknown" ]]; then
+    if [[ "$VALIDATION" == "false" ]]; then
+        # skip validation
+        echo "${is_valid}"
+    else
+        if [[ "${is_local}" == true ]]; then
+            info "MODE  = LOCAL"
+            is_valid=$(is_valid_path "${local_url}")
+            if [[ ${is_valid} == "true" ]]; then
+                info "URL STATUS = VALID"
+            else
+                info "URL STATUS = NOT VALID"
+            fi
+            elif [[ "${is_remote}" == true ]]; then
+            info "MODE REMOTE" "MODE  = REMOTE"
             if [[ "${is_ssh}" == true ]]; then
-                info "TYPE  = SSH"
+                url_type="ssh"
+            else
+                url_type=$(get_type "${local_url}")
+            fi
+            is_valid=$(checkurl "${url_type}" "${local_url}" "${is_ssh}")
+            
+            
+            if [[ "$is_valid" == true ]]; then
+                info "CONNECTION  = EXIST"
+                
+                elif [[ "${is_valid}" == "unknown" ]]; then
+                if [[ "${is_ssh}" == true ]]; then
+                    info "TYPE  = SSH"
+                fi
+            else
+                info "CONNECTION  = NOT VALID"
+                info "CONNECTION  = deep copy can't be executed."
             fi
         else
-            info "CONNECTION  = NOT VALID"
-            info "CONNECTION  = deep copy can't be executed."
+            info "MODE  = UNDEFINED"
         fi
-    else
-        info "MODE  = UNDEFINED"
     fi
-    
     info "URL   = ${local_url}"
     
     #return the plausi value
@@ -163,8 +174,10 @@ plausi_check() {
     fi
     if [[ $# -eq 1 ]]; then
         local_url=${1}
-        local tmp=$(get_type ${local_url})
-        local can__be_ssh="false"
+        local tmp
+        tmp=$(get_type "${local_url}")
+        local can__be_ssh
+        can__be_ssh="false"
         if [[ "${tmp}" == "other" ]]; then
             can__be_ssh="true"
         fi
@@ -198,9 +211,13 @@ plausi_check() {
             shift;
             shift;
         ;;
-        --yes | -y)
-            info "SKIP QUESTION TRUE" "Skip Question Flag activated."
-            SKIP_QUESTIONS="true"
+        --test-connections | -t)
+            info "TEST CONNECTIONS TRUE" "Test Connections Flag activated."
+            TEST_CONNECTIONS="true"
+        ;;
+        --validate | --check | -v | -c)
+            info "Validate CONNECTIONS TRUE" "Validate Connections Flag activated."
+            VALIDATION="true"
         ;;
         help | -?)
             help

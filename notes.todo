@@ -16,3 +16,7 @@ units:
 urls:
 url1: git project
 url2: only user / orga
+
+
+# Troubleshooting
+rm -rf /tmp/submodule_pull_tmp/tmp_repo/

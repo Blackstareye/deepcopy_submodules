@@ -129,7 +129,7 @@ main() {
     if [[ ${IS_REMOTE} == "true" ]]; then
          
          local target="${TMP_PATH}/tmp_repo"
-         mkdir -p "$target" 
+         #mkdir -p "$target" 
          # git remote 
         clone_remote "${URL_ARR[0]}" ${target}
         SOURCE_LOCAL_URL=${target}
