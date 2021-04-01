@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# caller for ini parsing 
+# caller for ini parsing
 source "config.conf"
 if [[ "$DEBUG" == "true" ]]; then
     cd ${SCRIPT_PATH} || exit 1
@@ -48,4 +48,30 @@ create_test_output() {
 #parse_ini "$1"
 #print_ini >> test_result.tst
 
-echo hello
+# declare -a test_segments
+# declare -a print_from_ini
+#mkdir -p $TMP_PATH
+# INI_TEST_FOLDER="tst/ini_files/normal"
+# INI_TEST_FOLDER=$(realpath ${INI_TEST_FOLDER})
+# TEST_RESULT_FILE=$(realpath "tst/test_result.tst")
+# my_test_file=$(realpath "${INI_TEST_FOLDER:?}"/test_2_dup.ini)
+# create_test_output
+# # greps the valid segment of the test result
+# util_grep_test_result_content "${TEST_RESULT_FILE}" "${my_test_file}" > tmp.file
+
+# # creates the list for ini segment checking
+# # grep the parts with the brackets | delete the brackets, keep the content | put everything in one line | delete the remaining whitespace
+# output_testfile=$(grep -e '\[.*\]' tmp.file | sed 's/\[\(.*\)\]/\1/' | tr '\n' ' ' | sed 's/ $//')
+# #echo "${output_testfile}"
+# segment_from_parser=$(parse_ini "${my_test_file}")
+
+# echo "${segment_from_parser[@]}"
+# cat tmp.file
+# # have: 1. param
+# # want: 2. param
+# assert_equal "${segment_from_parser[@]}" "${output_testfile[@]}"
+
+
+# print_from_ini=$(print_ini_auto "${my_test_file}")
+# assert_equal "${print_from_ini}" "$(cat tmp.file)"
+# rm -r $TMP_PATH

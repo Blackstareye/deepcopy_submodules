@@ -4,7 +4,7 @@
 function setup() {
     INI_TEST_FOLDER="ini_files/normal"
     INI_TEST_FOLDER=$(realpath ${INI_TEST_FOLDER})
-    TEST_RESULT_FILE=$(realpath "test_result.tst")
+    TEST_RESULT_FILE=$(realpath "report/test_parse_ini_result.tst")
     load "/test_helper/bats-support/load"
     load "/test_helper/bats-asserts/load"
     load "test.conf"

@@ -83,7 +83,7 @@ error_actions() {
 }
 
 
-GIT_MODULE_FILE=".gitmodules"
+
 # url validation array (true: valid url)
 declare -a IS_VALID_ARR
 # contains the 2 urls

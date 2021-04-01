@@ -6,7 +6,7 @@
 function setup() {
     INI_TEST_FOLDER="ini_files/normal"
     INI_TEST_FOLDER=$(realpath ${INI_TEST_FOLDER})
-    TEST_RESULT_FILE=$(realpath "test_result.tst")
+    TEST_RESULT_FILE=$(realpath "report/test_parse_ini_result.tst")
     load "/test_helper/bats-support/load"
     load "/test_helper/bats-asserts/load"
     load "test.conf"
@@ -51,36 +51,34 @@ function setup() {
     assert_equal "${print_from_ini}" "$(cat tmp.file)"    
     #run echo "hello"
     #assert_equal "hellao" "$output"
-    rm tmp.file
+    
+    
 }
 
 @test "test ini contains 3 duplicates" {
-    # can be calculates
-    declare -a test_segments
-    declare -a print_from_ini
-    my_test_file=$(realpath "${INI_TEST_FOLDER:?}"/test_3_dup.ini)
+# can be calculates
+declare -a test_segments
+declare -a print_from_ini
+my_test_file=$(realpath "${INI_TEST_FOLDER:?}"/test_2_dup.ini)
+# greps the valid segment of the test result
+util_grep_test_result_content "${TEST_RESULT_FILE}" "${my_test_file}" > tmp.file
 
-    # greps the valid segment of the test result
-    util_grep_test_result_content "${TEST_RESULT_FILE}" "${my_test_file}" > tmp.file
-    
-    # creates the list for ini segment checking
-    # grep the parts with the brackets | delete the brackets, keep the content | put everything in one line | delete the remaining whitespace
-    output_testfile=$(grep -e '\[.*\]' tmp.file | sed 's/\[\(.*\)\]/\1/' | tr '\n' ' ' | sed 's/ $//')
-    #echo "${output_testfile}"
-    segment_from_parser=$(parse_ini "${my_test_file}")
+# creates the list for ini segment checking
+# grep the parts with the brackets | delete the brackets, keep the content | put everything in one line | delete the remaining whitespace
+output_testfile=$(grep -e '\[.*\]' tmp.file | sed 's/\[\(.*\)\]/\1/' | tr '\n' ' ' | sed 's/ $//')
+#echo "${output_testfile}"
+segment_from_parser=$(parse_ini "${my_test_file}")
 
-    echo "${segment_from_parser[@]}"
-    cat tmp.file
-    # have: 1. param
-    # want: 2. param
-    assert_equal "${segment_from_parser[@]}" "${output_testfile[@]}"
+echo "${segment_from_parser[@]}"
+cat tmp.file
+# have: 1. param
+# want: 2. param
+assert_equal "${segment_from_parser[@]}" "${output_testfile[@]}"
 
 
-    print_from_ini=$(print_ini_auto "${my_test_file}")
-    assert_equal "${print_from_ini}" "$(cat tmp.file)"    
-    #run echo "hello"
-    #assert_equal "hellao" "$output"
-    rm tmp.file
+print_from_ini=$(print_ini_auto "${my_test_file}")
+assert_equal "${print_from_ini}" "$(cat tmp.file)"
+rm tmp.file
 }
 
 

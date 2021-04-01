@@ -20,21 +20,23 @@ function setup() {
     ERROR_L="${LOG_PATH:?}/error.log"
     INFO_L="${LOG_PATH:?}/info.log"
     init_log "$LOG_PATH"
+    cp -r  "tst/testpackage/." $TMP_PATH/ 
     clear_logs
 }
 
 
 function teardown() {
-    if [[ -d ${TMP_PATHJ} ]]; then
+    if [[ -d ${TMP_PATH} ]]; then
         /bin/rm  -rf ${TMP_PATH}    
     fi
 }
 
 # with base local sem_okay sem_okay
 @test "set 1 remove_submodules: " {
-    section_list=("foo" "bar")
+        section_list=("tinysubproject")
     URL_ARR=("foo","localhost")
-    run remove_submodules  ${TMP_PATH}
+    #mkdir -p "/tmp/tst/unit_test"
+    run remove_submodules  ${TMP_PATH}/tinyproject
     assert_success
     refute_output 
 }

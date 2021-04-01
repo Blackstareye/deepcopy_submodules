@@ -37,6 +37,22 @@ task_add_submodules_local() {
         git commit -m "Added the submodule ${section} to the project." || { error "FAILURE USING git commit -m  ${section}  was not sucessful"; return 1; }
     done
 }
+task_clone_from_remote() {
+    # TODO realize clone
+    echo "TODO"
+    # if [[ $# -ne 2 ]]; then
+    #     { error "Cloning from Remote Task - PARAMS Size is not 2" "PARAMS Size is not 1 it is: $#"; return 1; }
+    # fi
+    # #cd "${1}" || { error "FAILURE USING CD" " ${1} was not sucessful"; console_exit; }
+    # local remote_url="${URL_ARR[1]}/${section}.git"
+    # # shellcheck disable=SC2154
+    # for section in "${section_list[@]}"; do
+    #     info "ADDING SUBMODULE LOCALLY"  "SUBMODULE: [${section}] with path: ${1}"
+    #     remote_url="${URL_ARR[1]}/${section}.git"
+    #     git submodule add "${remote_url}" || { error "FAILURE USING submodule add ${remote_url} was not sucessful"; return 1; }
+    #     git commit -m "Added the submodule ${section} to the project." || { error "FAILURE USING git commit -m  ${section}  was not sucessful"; return 1; }
+    # done
+}
 
 task_push_changes() {
     if [[ $# -ne 1 ]]; then
@@ -84,7 +100,7 @@ task_remove_submodule() {
         submodule="${section}"
         
         # remove submodule folder
-        removepath="${1}/${submodule}"
+        removepath="${1}/${submodule}/"
         info "GITMODULE REMOVING - SUBMODULE Remove"  "[${section}] Remove Submodule folder in ${removepath}"
         git rm -r --cached "${removepath}"  || { error "FAILURE USING git rm -r --cached" " ${removepath} was not sucessful"; return 1; }
         info "GITMODULE REMOVING - SUBMODULE Remove"  "[${section}] Remove Submodule Cache folder in ${git_module_folder}/${section}"

@@ -34,6 +34,7 @@ check_path_file() {
     if [[ -f "${1}" ]]; then
         return 0
     else
+        check_path_dir "$1" && return 0
         return 1
     fi
 }
@@ -41,6 +42,7 @@ check_path_dir() {
   if [[ -d "${1}" ]]; then
         return 0
     else
+        check_path_file "$1" && return 0
         return 1
     fi
 }
