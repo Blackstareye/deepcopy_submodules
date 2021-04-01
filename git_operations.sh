@@ -181,7 +181,8 @@ remove_submodules() {
     # template for isolation call
     tmp_string="$*"
     command="task_remove_submodule"
-    new_string="$command $("$tmp_string")"
+    # shellcheck disable=SC2116
+    new_string="$command $(echo "$tmp_string")"
     #echo "$new_string"
     isolated_operation "$new_string" "revert_task_remove_submodules"
 }
@@ -191,7 +192,8 @@ add_submodules_new_remote() {
     # template for isolation call
     tmp_string="$*"
     command="task_add_submodules_new_remote"
-    new_string="$command $("$tmp_string")"
+    # shellcheck disable=SC2116
+    new_string="$command $(echo "$tmp_string")"
     #echo "$new_string"
     isolated_operation "$new_string" "revert_task_add_submodules_new_remote"
 }
@@ -201,7 +203,8 @@ add_submodules_local() {
     # template for isolation call
     tmp_string="$*"
     command="task_add_submodules_local"
-    new_string="$command $("$tmp_string")"
+    # shellcheck disable=SC2116
+    new_string="$command $(echo "$tmp_string")"
     #echo "$new_string"
     isolated_operation "$new_string" "revert_task_add_submodules_local"
 }
@@ -209,7 +212,8 @@ push_changes() {
     # template for isolation call
     tmp_string="$*"
     command="task_push_changes"
-    new_string="$command $("$tmp_string")"
+    # shellcheck disable=SC2116
+    new_string="$command $(echo "$tmp_string")"
     #echo "$new_string"
     isolated_operation "$new_string" "revert_push_changes"
 }
