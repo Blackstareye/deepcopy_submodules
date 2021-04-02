@@ -35,7 +35,9 @@ function teardown() {
 @test "set 1 remove_submodules: " {
         section_list=("tinysubproject")
     URL_ARR=("foo","localhost")
+    # WARNING : does only work with a valid git repo in testpackage
     #mkdir -p "/tmp/tst/unit_test"
+    skip
     run remove_submodules  ${TMP_PATH}/tinyproject
     assert_success
     refute_output 

@@ -40,9 +40,11 @@ source "tst/stub/test_stub.sh"
 # cp -r "tst/testpackage/." "/tmp/tst/unit_test/"
 # remove_submodules  "/tmp/tst/unit_test/tinyproject"
 # rm -r "/tmp/tst/unit_test/"
-section_list=("abc" "def")
 TMP_PATH="/tmp/tst/unit_testing/"
 mkdir -p ${TMP_PATH} 
 target="${TMP_PATH}/temporino"
-URL_ARR=("https://github.com/Blackstareye/Random-Pokemon-Generator" "duh")
-remove_submodules  ${URL_ARR[0]} $target
+run remove_submodules  ${TMP_PATH}/tinyproject
+section_list=("tinysubproject")
+URL_ARR=("foo","localhost")
+cp -r  "tst/testpackage/." $TMP_PATH/ 
+remove_submodules  ${TMP_PATH}/tinyproject
