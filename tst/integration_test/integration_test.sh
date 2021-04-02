@@ -3,7 +3,7 @@
 # this is the integration test ini - tst/integration_test/integration_test.ini
 # shellcheck disable=SC2088
 INTEGRATION_TEST_CONF="~/integration_test.conf"
-REPORT_FILE=$(realpath "tst/report/integration_test.params")
+REPORT_FILE="tst/report/integration_test.params"
 VISIBLE_PASSWORD="false"
 #cd "${0%/*}" || exit 1
 
