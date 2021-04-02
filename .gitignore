@@ -1,3 +1,5 @@
 .vscode/*
 *.log
 *.ini
+tst/report/integration_test.params
+tst/report/test_parse_ini_result.tst

@@ -20,3 +20,6 @@ url2: only user / orga
 
 # Troubleshooting
 rm -rf /tmp/submodule_pull_tmp/tmp_repo/
+
+tst/report/integration_test.params
+tst/report/test_parse_ini_result.tst
