@@ -92,6 +92,10 @@ get_type() {
         echo "http"
         elif [[ $1 =~ ^https:// ]]; then
         echo "https"
+        elif [[ $1 =~ ^ssh:// ]]; then
+        echo "ssh"
+        elif [[ $1 =~ ^.*:// ]]; then
+        echo "unsupported_protocoll"
     else
         echo "other"
     fi
@@ -110,7 +114,7 @@ validate_param() {
     local url_type
     if [[ "$VALIDATION" == "false" ]]; then
         # skip validation
-        echo "${is_valid}"
+        echo "true"
     else
         if [[ "${is_local}" == true ]]; then
             info "MODE  = LOCAL"
