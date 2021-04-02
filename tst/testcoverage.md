@@ -22,6 +22,8 @@
 
 ## Utils
 
+### Integration Testing
+    * integration_test.sh
 ### Testing
 
     * testhelper.sh
@@ -29,15 +31,6 @@
     * test.conf
     * test_stub
 
-### Debugging
-    has debugger entry: 
-        * deepe_copy_submodule (main)
-        * validator.sh
-        * test_stub.sh
-        * isolation.sh
-        * log.sh
-        * ini_parser.sh
-        * git_operation.sh
 
 ### Has Caller Scripts
 

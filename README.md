@@ -1,10 +1,10 @@
 # Project
 ## Introduction
-
+TODO
 
 ## used Language
 bash
 ## used Software 
-bat, shellchecker
+bats, shellchecker
 ## Status
 complete

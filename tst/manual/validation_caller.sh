@@ -11,10 +11,10 @@ clear_logs
 source "validation.sh"
 source "tst/validation_test_set.sh"
 
-VALIDATION="true"
-TEST_CONNECTIONS=""
-    declare -a firstcall_check=("true" "${HTTPS_syn_sucess[0]}")
-    declare -a secondcall_check=("false" "${HTTP_syn_faulty[0]}")
+#    VALIDATION=""
+#     TEST_CONNECTIONS="true"
+#     declare -a firstcall_check=("false" "${HTTPS_syn_sucess[0]}")
+#     declare -a secondcall_check=("false" "${HTTPS_syn_faulty[1]}")
 #plausi_check "remote" "localhost"
 # shellcheck disable=SC2154
 plausi_check "${secondcall_check[1]}"

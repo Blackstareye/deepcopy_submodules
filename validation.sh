@@ -14,7 +14,6 @@ is_valid_path() {
     
 }
 
-# TODO logging
 checkhttp() {
     if curl --output /dev/null --silent --head --fail "$1"; then
         # echo "URL exists: $1"
@@ -77,14 +76,6 @@ checkurl() {
     esac
     echo "${returnvalue}"
 }
-# checkssh() {
-#     if nc -w 5 -z "$1" 22 ; then
-#         echo "Port 22 on $1 is open"
-#         #return 0
-#         echo "true"
-#     fi
-#     echo "false"
-# }
 
 
 get_type() {
@@ -112,7 +103,7 @@ validate_param() {
     
     local is_valid
     local url_type
-    if [[ "$VALIDATION" == "false" ]]; then
+    if [[ "$VALIDATION" == "false" || -z "$VALIDATION" ]]; then
         # skip validation
         echo "true"
     else
@@ -154,9 +145,6 @@ validate_param() {
     #return the plausi value
     echo "${is_valid}"
     
-    # if [[ -n $1 ]]; then
-    #     echo "Last line of the file specified as non-opt/last argument"
-    # fi
     
 }
 

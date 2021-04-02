@@ -65,7 +65,7 @@ function setup() {
     assert_equal "${output[*]}" "${secondcall_check[*]}"
 }
 @test "set 3 : local, path_okay, remote_sem_okay" {
-       # NOTE source instead of load, arrays have problems with load
+    # NOTE source instead of load, arrays have problems with load
     source "tst/validation_test_set.sh"
     declare -a firstcall_check=("true" "${PATH_sucess[3]}")
     declare -a secondcall_check=("true" "${HTTPS_sem_sucess[0]}")
@@ -90,7 +90,7 @@ function setup() {
     assert_equal "${output[*]}" "${secondcall_check[*]}"
 }
 @test "set 5 : remote, path_okay, remote_sem_okay" {
-           # NOTE source instead of load, arrays have problems with load
+    # NOTE source instead of load, arrays have problems with load
     source "tst/validation_test_set.sh"
     declare -a firstcall_check=("false" "${PATH_sucess[2]}")
     declare -a secondcall_check=("true" "${HTTPS_sem_sucess[0]}")
@@ -103,7 +103,7 @@ function setup() {
     assert_equal "${output[*]}" "${secondcall_check[*]}"
 }
 @test "set 6 : local, not_okay, remote_sem_okay" {
-           # NOTE source instead of load, arrays have problems with load
+    # NOTE source instead of load, arrays have problems with load
     source "tst/validation_test_set.sh"
     declare -a firstcall_check=("false" "${PATH_faulty[2]}")
     declare -a secondcall_check=("true" "${HTTPS_sem_sucess[0]}")

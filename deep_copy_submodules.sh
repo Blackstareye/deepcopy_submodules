@@ -37,12 +37,6 @@ SOURCE_LOCAL_URL=""
 BASE_PATH=""
 IS_LOCAL=false
 IS_REMOTE=false
-#IS_SSH=false
-
-
-
-# TODO sanity check, check if both sources are available, else quit
-# TODO sanity check, check if path is available
 
 
 init_log "${LOG_PATH:-${CWD_PATH}}"
@@ -56,12 +50,23 @@ info "INFO PWD:" "PWD is : ${LOG_PATH:-${CWD_PATH}}"
 
 # help text method
 help () {
-    echo "Usuage: [remote/local] [source url] [target url]."
-    echo "Remote : can be http(s) or ssh (experimental)"
-    echo "Local : valid path to git root folder"
-    echo "source url : url related to the type (remote/local)"
-    echo "target url : url of the target (https or ssh (exp.))"
-    echo "additional info: url will be validated, http(s) will be tested with curl before doing the deep copy."
+    usuage
+    #echo "Usuage: [remote/local/ssh] [-] [source url] [target url]."
+    echo "type_for_first_url:"
+    echo "      -remote : can be http(s) "
+    echo "      -ssh : valid ssh url (experimental)"
+    echo "      -local : valid path to git root folder"
+    echo "options:"
+    echo "      --validate | --check | -v | -c : validate url syntax before use. if -t is enabled,"
+    echo "                                       it will also check if the url connection can be established."
+    echo "      --test-connections | -t : check if the url connection can be established using curl. Works not for ssh so far."
+    echo "source url : url related to the url type (remote/local/ssh)"
+    echo "target url : url of the target. must be remote (https or ssh (exp.))"
+    echo "additional info: url will be validated, http(s) will be tested with curl before doing the deep copy if the flags (or set in the config)."
+}
+# help text method
+usuage () {
+    echo "Usuage: [type_for_first_url] [options] [source url] [target url]"
 }
 
 clean_up() {
@@ -71,7 +76,6 @@ clean_up() {
         # Using :? will cause the command to fail if the variable is null or unset. Similarly, you can use :- to set a default value if applicable.
         rm -rf "${SOURCE_LOCAL_URL:?}"/
     fi
-    #TODO enable clean_up_ini
 }
 
 # TODO trap clean_up ERR
@@ -116,8 +120,6 @@ main() {
     # NOTE += does work, index + 1 not.
     IS_VALID_ARR+=("${values_b[0]}")
     URL_ARR+=("${values_b[1]}")
-    # IS_VALID_ARR[1]= ${values_b[0]}
-    # URL_ARR[1]=${values_b[1]}
     
     set -- "${POSITIONAL[@]}" # restore positional parameters
     #  GET MODULES
@@ -170,7 +172,6 @@ main() {
         remove_submodules ${SOURCE_LOCAL_URL}
         
         
-        #TODO add_submodules_local
         add_submodules_local ${SOURCE_LOCAL_URL}
         
         push_changes ${SOURCE_LOCAL_URL}
@@ -187,8 +188,7 @@ main() {
     
     
 }
-
-# TODO to be tested
+# IMPROVE enable traps?
 #trap clean_up EXIT #SIGINT
 #trap error_actions ERR
 

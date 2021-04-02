@@ -72,18 +72,15 @@ function teardown() {
 }
 # with base local sem_okay sem_okay
 @test "set 5 check if stub works: " {
-    # NOTE source instead of load, arrays have problems with load
     run test_foo foo 
     assert_success 
     assert_output --partial "successfully"
 }
 @test "set  6 check if git stub works: " {
-    # NOTE source instead of load, arrays have problems with load
     run git remote foo "http://lorem/ipsum"
     assert_success 
 }
 @test "set  7 check if rm stub works: " {
-    # NOTE source instead of load, arrays have problems with load
     file="abc.bar"
     touch $file
     run rm $file
@@ -94,7 +91,6 @@ function teardown() {
 }
 
 @test "set  8 Clone Repo: " {
-    # NOTE source instead of load, arrays have problems with load
     section_list=("abc" "def")
     target="${TMP_PATH}/temporino"
     URL_ARR=("https://github.com/Blackstareye/Random-Pokemon-Generator" "duh")
