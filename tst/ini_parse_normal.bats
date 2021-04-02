@@ -121,7 +121,7 @@ function teardown() {
     test_file="${INI_TEST_FOLDER:?}/test_1.ini"
     segments=("tinysubproject")
     keys=("url" "path")
-    value_s=("tinysubproject" "http://blacklinux/blackeye/tinysubproject") 
+    value_s=("tinysubproject" "http://foobar/blackeye/tinysubproject") 
     index_a=0
     
     # use run only if you dont have any global variables!!!
@@ -149,7 +149,7 @@ function teardown() {
     test_file="${INI_TEST_FOLDER:?}/test_3.ini"
     segments=("tinysubproject" "tinysubprojecta" "tinysubprojectb")
     keys=("url" "path")
-    value_s=("tinysubproject" "http://blacklinux/blackeye/tinysubproject" "tinysubprojectA" "http://blacklinux/blackeye/tinysubprojectA" "tinysubprojectB" "http://blacklinux/blackeye/tinysubprojectB") 
+    value_s=("tinysubproject" "http://foobar/blackeye/tinysubproject" "tinysubprojectA" "http://foobar/blackeye/tinysubprojectA" "tinysubprojectB" "http://foobar/blackeye/tinysubprojectB") 
     index_a=0
     
     # use run only if you dont have any global variables!!!

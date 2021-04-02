@@ -45,4 +45,4 @@ TMP_PATH="/tmp/tst/unit_testing/"
 mkdir -p ${TMP_PATH} 
 target="${TMP_PATH}/temporino"
 URL_ARR=("https://github.com/Blackstareye/Random-Pokemon-Generator" "duh")
-clone_remote  ${URL_ARR[0]} $target
+remove_submodules  ${URL_ARR[0]} $target
