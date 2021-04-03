@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # this script will deep copy the modules of a given git repo
-
+CONFIG_DIR="$HOME/.conf/submodule_deepcopy/config.conf"
 # TODO License: GPL v3,
 # if it is a remote  repo (remote <path>) it will clone the repo first
 # if it is local it doesnt need that step
@@ -8,8 +8,14 @@
 # Stop even, if a command in a pipe fails.
 set -e -o pipefail
 
-# Configuration load
-source "config.conf"
+
+# let cdw be the actual  directory
+# FOR DEBUG
+
+source "$CONFIG_DIR"
+
+# change directory to script directory
+cd "${SCRIPT_PATH}" || { echo "can't change directory to script path: ${SCRIPT_PATH}."; echo "Please ensure that SCRIPT_PATH in $CONFIG_DIR is the path to deep_copy_submodules."; echo "Otherwise use install.sh within the deep_copy_submodules folder and run this script again."; exit 1; }
 
 # import functions
 # logging
@@ -22,13 +28,7 @@ source "validation.sh"
 source "git_operations.sh"
 
 
-# let cdw be the actual  directory
-# FOR DEBUG
-if [[ "$DEBUG" == "true" ]]; then
-    cd ${SCRIPT_PATH}
-else
-    cd "${0%/*}"
-fi
+
 CWD_PATH="$(pwd)"
 
 
@@ -43,7 +43,7 @@ init_log "${LOG_PATH:-${CWD_PATH}}"
 if [[ "${CLEAR_LOGS}" == "true" ]]; then
     clear_logs
     info "CLEARED LOGS" "Cleared the logs."
-    clear
+    #clear
 fi
 info "INFO PWD:" "PWD is : ${LOG_PATH:-${CWD_PATH}}"
 
@@ -66,7 +66,7 @@ help () {
 }
 # help text method
 usuage () {
-    echo "Usuage: [type_for_first_url] [options] [source url] [target url]"
+    echo "$0: [-v|--validate|-c|--check] [-t|--test-connections] [--usage] [-h|--help] type_for_fist_url source_url target_url"
 }
 
 clean_up() {
@@ -82,7 +82,7 @@ clean_up() {
 error_actions() {
     echo "an error occured. See log what happened."
     echo "cleaning up"
-    clean_up 
+    clean_up
     echo "done."
 }
 
@@ -95,6 +95,21 @@ declare -a URL_ARR
 main() {
     
     #  CHECK FIRST PARAM (local|remote url)
+    key="$1"
+    case $key in
+        --help | -h | -"?")
+            help
+            shift;
+            shift;
+            exit 0
+        ;;
+        --usuage | -u)
+            usuage
+            exit 0
+    esac
+    
+    
+    
     if [[ $# -ne 3 ]]; then
         error "ERROR - PARAM SIZE" "Param Size needs to be at least 3 (type, source, target)"
         exit 1
@@ -105,6 +120,9 @@ main() {
         IS_LOCAL="true"
     fi
     if [[ $1 == "remote" ]]; then
+        IS_REMOTE="true"
+    fi
+    if [[ $1 == "ssh" ]]; then
         IS_REMOTE="true"
     fi
     # shellcheck disable=SC2207
@@ -129,18 +147,20 @@ main() {
         console_exit "URLS not valid"
     fi
     if [[ ${IS_REMOTE} == "true" ]]; then
-         
-         local target="${TMP_PATH}/tmp_repo"
-         #mkdir -p "$target" 
-         # git remote 
+        
+        local basename_repo=$(basename "${URL_ARR[0]}")
+        local target="${TMP_PATH}/${basename_repo}"
+        mkdir -p "$target"
+        # git remote
+        # go into the the directory
         clone_remote "${URL_ARR[0]}" ${target}
-        SOURCE_LOCAL_URL=${target}
+        SOURCE_LOCAL_URL=$(realpath ${target})
         BASE_PATH="$(basename "${target}")"
         # tmp folder is already created
         CREATE_TMP_FOLDER="false"
         declare -p SOURCE_LOCAL_URL
-
-    elif [[ ${IS_LOCAL} == "true" ]]; then
+        
+        elif [[ ${IS_LOCAL} == "true" ]]; then
         SOURCE_LOCAL_URL=${URL_ARR[0]}
         BASE_PATH="$(basename "${URL_ARR[0]}")"
         declare -p SOURCE_LOCAL_URL
@@ -156,6 +176,7 @@ main() {
         parse_ini "${git_module_path}"
         if [[ ${CREATE_TMP_FOLDER} == "true" ]]; then
             # space is important
+            rm -rf "${TMP_PATH:?}"
             if ! mkdir -p "${TMP_PATH}" || ! cp -rf "${SOURCE_LOCAL_URL:?}"/. ${TMP_PATH}/; then
                 error "ERROR - CREATING TMP_FOLDER" "Can't create tmp folder ${TMP_PATH}"
                 console_exit "ERROR - CREATING TMP_FOLDER" "true"
@@ -175,7 +196,7 @@ main() {
         add_submodules_local ${SOURCE_LOCAL_URL}
         
         push_changes ${SOURCE_LOCAL_URL}
-
+        
         echo "Program finished. Git repo migration sucessfull."
         
         clean_up
