@@ -4,7 +4,7 @@
 # shellcheck disable=SC2088
 INTEGRATION_TEST_CONF="~/integration_test.conf"
 REPORT_FILE="tst/report/integration_test.params"
-VISIBLE_PASSWORD="false"
+VISIBLE_PASSWORD="true"
 #cd "${0%/*}" || exit 1
 
 get_file_content() {
