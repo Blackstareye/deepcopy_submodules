@@ -20,7 +20,7 @@ task_add_submodules_local() {
     for section in "${section_list[@]}"; do
         info "ADDING SUBMODULE LOCALLY"  "SUBMODULE: [${section}] with path: ${1}"
         remote_url="${URL_ARR[1]}/${section}.git"
-        git submodule add "${remote_url}" || { error "FAILURE USING submodule add ${remote_url} was not sucessful"; return 1; }
+        git submodule add "${remote_url}" &>tmp.file || { error "FAILURE USING submodule add ${remote_url} was not sucessful. $(cat tmp.file)"; return 1; }
         git commit -m "Added the submodule ${section} to the project." || { error "FAILURE USING git commit -m  ${section}  was not sucessful"; return 1; }
     done
 }
@@ -34,7 +34,11 @@ task_clone_remote() {
     fi
     local remote_url="${1}"
     local local_target="${2}"
-    git clone "${remote_url}" "$local_target" || { error "FAILURE while CLONING" "cloning git repo from ${remote_url}  to tmp repo place $local_target."; return 1; }
+    [[ -d "$local_target" ]] && rm -rf "$local_target" # empty folder 
+    git clone "${remote_url}" "$local_target" &>tmp.file || { error "FAILURE while CLONING" "cloning git repo from ${remote_url}  to tmp repo place $local_target. $(cat tmp.file)" ; return 1; }
+    cd "$2" || { error "FAILURE USING CD" " ${2} was not sucessful"; console_exit; }
+    git submodule init &>tmp.file || { error "FAILURE while Submodule Init" "submodule init  $(cat tmp.file)" ; return 1; }
+    git submodule update &>tmp.file || { error "FAILURE while Submodule update" "submodule update  $(cat tmp.file)" ; return 1; } #--remote
 }
 
 task_push_changes() {
@@ -42,10 +46,15 @@ task_push_changes() {
         { error "Push Changes Task - PARAMS Size is not 1" "PARAMS Size is not 1 it is: $#"; return 1; }
     fi
     cd "${1}"  || { error "FAILURE USING CD" " ${1} was not sucessful"; console_exit; }
-    local remote_url="${URL_ARR[1]}/${BASE_PATH}.git"
+    
+    local TRIMMED=$(echo "${URL_ARR[1]}" | sed 's:/*$::')
+    local remote_url="${TRIMMED}/${BASE_PATH}"
+    if [[ ! "$remote_url" =~ .git$ ]]; then 
+        remote_url="${remote_url}.git"
+    fi
     info "PUSH Changes of parent git repo"  "pushing local ${1} to ${remote_url}"
     git remote add "${GIT_REMOTE_NAME}" "${remote_url}"  || { error "FAILURE USING remote add  ${GIT_REMOTE_NAME} ${remote_url} was not sucessful"; return 1; }
-    git push "${GIT_REMOTE_NAME}" "${GIT_REMOTE_BRANCH}"  || { error "FAILURE USING git push  ${GIT_REMOTE_NAME} ${GIT_REMOTE_BRANCH} was not sucessful"; return 1; }
+    git push "${GIT_REMOTE_NAME}" "${GIT_REMOTE_BRANCH}" &>tmp.file  || { error "FAILURE USING git push  ${GIT_REMOTE_NAME} ${GIT_REMOTE_BRANCH} was not sucessful $(cat tmp.file)"; return 1; }
     info "PUSH Changes of parent git repo"  "Done pushing"
 }
 
@@ -105,15 +114,18 @@ task_add_submodules_new_remote() {
     if [[ $# -ne 1 ]]; then
         { error "Add Submodules to new Remote Task - PARAMS Size is not 1" "PARAMS Size is not 1 it is: $#"; return 1; }
     fi
-    local remote_url="${URL_ARR[1]}/${section}.git"
+    local TRIMMED=$(echo "${URL_ARR[1]}" | sed 's:/*$::')
+    local remote_url="${TRIMMED}/${section}.git"
+    #local remote_url="${URL_ARR[1]}/${section}.git"
     for section in "${section_list[@]}"; do
         info "PUBLISHING TO NEW REMOTE"  "SUBMODULE: [${section}] changing directory ${1}/${section}"
         cd "${1}/${section}" || { error "FAILURE USING CD" " ${1}/${section} was not sucessful"; console_exit; }
-        remote_url="${URL_ARR[1]}/${section}.git"
+        remote_url="${TRIMMED}/${section}.git"
         info "PUBLISHING TO NEW REMOTE"  "SUBMODULE: [${section}] with url: ${remote_url}"
         git remote add "${GIT_REMOTE_NAME}" "${remote_url}" || { error "FAILURE USING git remote add" " ${GIT_REMOTE_NAME} was not sucessful"; return 1; }
+        msg=$(pwd) && echo "$msg"
         info "PWD LOCATION" "$(pwd)"
-        git push "${GIT_REMOTE_NAME}" "${GIT_REMOTE_BRANCH}" || { error "FAILURE USING git push  ${GIT_REMOTE_NAME} ${GIT_REMOTE_BRANCH} was not sucessful"; return 1; }
+        git push "${GIT_REMOTE_NAME}" "${GIT_REMOTE_BRANCH}" &>tmp.file || { error "FAILURE USING git push  ${GIT_REMOTE_NAME} ${GIT_REMOTE_BRANCH} was not sucessful. $(cat tmp.file)"; return 1; }
     done
 }
 
