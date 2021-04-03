@@ -161,20 +161,20 @@ plausi_check() {
     
     if [[ $# -gt 3 ]]; then
         echo "false" ""
-        error "INVALID VALIDATOR PARAM SIZE > 3" "Invalid count of params. Params (size: $#): ${*}"
+        error "INVALID VALIDATOR PARAM SIZE > 3" "(size: $#): ${*}"
         console_exit "INVALID VALIDATOR PARAM SIZE > 3"
     fi
     if [[ $# -eq 1 ]]; then
         local_url=${1}
-        local tmp
-        tmp=$(get_type "${local_url}")
-        local can__be_ssh
-        can__be_ssh="false"
-        if [[ "${tmp}" == "other" ]]; then
-            can__be_ssh="true"
-        fi
+        # local tmp
+        # tmp=$(get_type "${local_url}")
+        # local can__be_ssh
+        # can__be_ssh="false"
+        # if [[ "${tmp}" == "other" || "${tmp}" == "ssh" ]]; then
+        #     can__be_ssh="true"
+        # fi
         # NOTE here we can't proof if it is actually a wrong url or ssh -> so "can be ssh"
-        returnvalue=$(validate_param "false" "true" "${can__be_ssh}" "${local_url}")
+        returnvalue=$(validate_param "false" "true" "false" "${local_url}")
         echo "${returnvalue}" "${local_url}"
         return 0
     fi
