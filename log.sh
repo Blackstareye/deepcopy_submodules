@@ -41,6 +41,7 @@ console() {
 
 console_exit () {
     echo "Error occured - ${1:-()}. program will be exited. Please refer the logs for further information."
+    echo "use: less ${LOG_PATH}/*.log"
     exit 1
 }
 
