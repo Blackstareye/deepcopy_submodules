@@ -4,3 +4,4 @@ tmp.ini
 tst/report/*.params
 workspace.code-workspace
 tst/report/test_parse_ini_result.tst
+tmp.file
