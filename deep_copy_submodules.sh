@@ -1,23 +1,35 @@
 #!/usr/bin/env bash
-# this script will deep copy the modules of a given git repo
-CONFIG_DIR="$HOME/.conf/submodule_deepcopy/config.conf"
+# Author: Blackeye
 # TODO License: GPL v3,
+# this script will deep copy the modules of a given git repo
 # if it is a remote  repo (remote <path>) it will clone the repo first
 # if it is local it doesnt need that step
+CONFIG_FILE="$HOME/.conf/submodule_deepcopy/config.conf"
+
+
+SOURCE_LOCAL_URL=""
+BASE_PATH=""
+IS_LOCAL=false
+IS_REMOTE=false
+# url validation array (true: valid url)
+declare -a IS_VALID_ARR
+# contains the 2 urls
+declare -a URL_ARR
 
 # Stop even, if a command in a pipe fails.
 set -e -o pipefail
 
 
 # let cdw be the actual  directory
-# FOR DEBUG
-
-source "$CONFIG_DIR"
+source "$CONFIG_FILE"
 
 # change directory to script directory
-cd "${SCRIPT_PATH}" || { echo "can't change directory to script path: ${SCRIPT_PATH}."; echo "Please ensure that SCRIPT_PATH in $CONFIG_DIR is the path to deep_copy_submodules."; echo "Otherwise use install.sh within the deep_copy_submodules folder and run this script again."; exit 1; }
+cd "${SCRIPT_PATH}" || { echo "can't change directory to script path: ${SCRIPT_PATH}."; echo "Please ensure that SCRIPT_PATH in $CONFIG_FILE is the path to deep_copy_submodules."; echo "Otherwise use install.sh within the deep_copy_submodules folder and run this script again."; exit 1; }
+CWD_PATH=$(pwd)
 
 # import functions
+# ui settings and lines
+source "ui_lines.sh"
 # logging
 source "log.sh"
 # ini parser
@@ -28,46 +40,6 @@ source "validation.sh"
 source "git_operations.sh"
 
 
-
-CWD_PATH="$(pwd)"
-
-
-SOURCE_LOCAL_URL=""
-
-BASE_PATH=""
-IS_LOCAL=false
-IS_REMOTE=false
-
-
-init_log "${LOG_PATH:-${CWD_PATH}}"
-if [[ "${CLEAR_LOGS}" == "true" ]]; then
-    clear_logs
-    info "CLEARED LOGS" "Cleared the logs."
-    #clear
-fi
-info "INFO PWD:" "PWD is : ${LOG_PATH:-${CWD_PATH}}"
-
-
-# help text method
-help () {
-    usuage
-    #echo "Usuage: [remote/local/ssh] [-] [source url] [target url]."
-    echo "type_for_first_url:"
-    echo "      -remote : can be http(s) "
-    echo "      -ssh : valid ssh url (experimental)"
-    echo "      -local : valid path to git root folder"
-    echo "options:"
-    echo "      --validate | --check | -v | -c : validate url syntax before use. if -t is enabled,"
-    echo "                                       it will also check if the url connection can be established."
-    echo "      --test-connections | -t : check if the url connection can be established using curl. Works not for ssh so far."
-    echo "source url : url related to the url type (remote/local/ssh)"
-    echo "target url : url of the target. must be remote (https or ssh (exp.))"
-    echo "additional info: url will be validated, http(s) will be tested with curl before doing the deep copy if the flags (or set in the config)."
-}
-# help text method
-usuage () {
-    echo "$0: [-v|--validate|-c|--check] [-t|--test-connections] [--usage] [-h|--help] type_for_fist_url source_url target_url"
-}
 
 clean_up() {
     # clean up actions
@@ -86,14 +58,7 @@ error_actions() {
     echo "done."
 }
 
-
-
-# url validation array (true: valid url)
-declare -a IS_VALID_ARR
-# contains the 2 urls
-declare -a URL_ARR
-main() {
-    
+get_params() {
     #  CHECK FIRST PARAM (local|remote url)
     key="$1"
     case $key in
@@ -107,8 +72,6 @@ main() {
             usuage
             exit 0
     esac
-    
-    
     
     if [[ $# -ne 3 ]]; then
         error "ERROR - PARAM SIZE" "Param Size needs to be at least 3 (type, source, target)"
@@ -140,30 +103,40 @@ main() {
     URL_ARR+=("${values_b[1]}")
     
     set -- "${POSITIONAL[@]}" # restore positional parameters
-    #  GET MODULES
-    # TOBE TESTED
+}
+
+clone_repo_from_remote() {
+    local basename_repo=$(basename "${URL_ARR[0]}")
+    local target="${TMP_PATH}/${basename_repo}"
+    mkdir -p "$target"
+    # git remote
+    # go into the the directory
+    clone_remote "${URL_ARR[0]}" ${target}
+    SOURCE_LOCAL_URL=$(realpath ${target})
+    BASE_PATH="$(basename "${target}")"
+    # tmp folder is already created
+    CREATE_TMP_FOLDER="false"
+}
+
+
+main() {
+    
+    get_params "$@"
+    
+    print_status
     if [[ "${VALIDATION}" == "true" && "${IS_VALID_ARR[0]}" != "true" || "${IS_VALID_ARR[1]}" != "true" ]]; then
         error "URLS not valid" "There are urls that are not valid: ${IS_VALID_ARR[0]}:${URL_ARR[0]} ; ${IS_VALID_ARR[1]}:${URL_ARR[1]} ; VALIDATION_FLAG=${VALIDATION}"
         console_exit "URLS not valid"
     fi
     if [[ ${IS_REMOTE} == "true" ]]; then
         
-        local basename_repo=$(basename "${URL_ARR[0]}")
-        local target="${TMP_PATH}/${basename_repo}"
-        mkdir -p "$target"
-        # git remote
-        # go into the the directory
-        clone_remote "${URL_ARR[0]}" ${target}
-        SOURCE_LOCAL_URL=$(realpath ${target})
-        BASE_PATH="$(basename "${target}")"
-        # tmp folder is already created
-        CREATE_TMP_FOLDER="false"
-        declare -p SOURCE_LOCAL_URL
+        echo "Cloning repo now...."
+        clone_repo_from_remote
+        echo "Cloning repo done."
         
         elif [[ ${IS_LOCAL} == "true" ]]; then
         SOURCE_LOCAL_URL=${URL_ARR[0]}
         BASE_PATH="$(basename "${URL_ARR[0]}")"
-        declare -p SOURCE_LOCAL_URL
     else
         error "ERROR-FATAL NOT LOCAL, NOT REMOTE" "Fatal error, values of is_local (v: ${IS_LOCAL}) and is_remote (v: ${IS_REMOTE}) are both not true."
         console_exit "ERROR- FATAL NOT LOCAL, NOT REMOTE"
@@ -173,7 +146,9 @@ main() {
     local git_module_path=${SOURCE_LOCAL_URL}/${GIT_MODULE_FILE}
     if [[ -f  ${git_module_path} ]]; then
         # call ini parser:
+        [[ $DEBUG ]] && echo "Parsing Ini now..."
         parse_ini "${git_module_path}"
+        [[ $DEBUG ]] && echo "Parsing Ini done"
         if [[ ${CREATE_TMP_FOLDER} == "true" ]]; then
             # space is important
             rm -rf "${TMP_PATH:?}"
@@ -183,30 +158,30 @@ main() {
             fi
             SOURCE_LOCAL_URL=${TMP_PATH}
         fi
-        
+        [[ $DEBUG ]] && echo "Using folder $COLOR_YELLOW $SOURCE_LOCAL_URL $COLOR_RESET for uploading now."
         # prepare .gitmodules
         # change all url with new domain url
         # First push submodules
         # then delete and change root git
+        echo "(1/5): Uploading submodules to $COLOR_YELLOW ${URL_ARR[1]} $COLOR_RESET"
         add_submodules_new_remote ${SOURCE_LOCAL_URL}
-        
+        echo "(2/5): Removing now local submodules ... "
         remove_submodules ${SOURCE_LOCAL_URL}
         
         
+        echo "(3/5): Adding submodules locally with new remote..."
         add_submodules_local ${SOURCE_LOCAL_URL}
         
+        echo "(4/5): Pushing repo with new remote urls to $COLOR_YELLOW ${URL_ARR[1]} $COLOR_RESET..."
         push_changes ${SOURCE_LOCAL_URL}
         
-        echo "Program finished. Git repo migration sucessfull."
-        
+        echo "(5/5): Cleaning up..."
         clean_up
+        echo "Program finished. Git repo migration sucessfull. You can now visit your repo at $COLOR_YELLOW ${URL_ARR[1]} $COLOR_RESET"
     else
         error "ERROR" "Git Submodule File does not exist on path ${git_module_path}."
         console_exit "Git Submodule File does not exist on path ${git_module_path}."
     fi
-    
-    # LAST
-    
     
 }
 # IMPROVE enable traps?
@@ -214,4 +189,15 @@ main() {
 #trap error_actions ERR
 
 # start program
+init_deepcopy() {
+    init_log "${LOG_PATH:-${CWD_PATH}}"
+    if [[ "${CLEAR_LOGS}" == "true" ]]; then
+        clear_logs
+        info "CLEARED LOGS" "Cleared the logs."
+        #clear
+    fi
+    info "INFO PWD:" "PWD is : ${LOG_PATH:-${CWD_PATH}}"
+}
+
+init_deepcopy
 main "$@"

@@ -36,12 +36,12 @@ info () {
 }
 
 console() {
-    echo "Error occured - ${1:-()}. Please refer the logs for further information."
+    echo "$COLOR_RED Error occured - {1:-()} $COLOR_RESET. Please refer the logs for further information."
 }
 
 console_exit () {
-    echo "Error occured - ${1:-()}. program will be exited. Please refer the logs for further information."
-    echo "use: less ${LOG_PATH}/*.log"
+    echo "$COLOR_RED Error occured - {1:-()} $COLOR_RESET. Program will be exited. Please refer the logs for further information."
+    echo "use: less $COLOR_YELLOW ${LOG_PATH}/*.log $COLOR_RESET"
     exit 1
 }
 
