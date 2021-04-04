@@ -7,7 +7,7 @@
 ***
 ***
 *** To avoid retyping too much info. Do a search and replace for the following:
-*** Blackeye, deep_copy_submodules, BlackeyeM, private_blackeye+github@posteo.de, Deep Copy of Submodules, project_description
+*** Blackeye, deepcopy_submodules, BlackeyeM, private_blackeye+github@posteo.de, Deep Copy of Submodules, project_description
 -->
 
 <!-- PROJECT SHIELDS -->
@@ -27,7 +27,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <p align="center">
-  <a href="https://github.com/Blackeye/deep_copy_submodules">
+  <a href="https://github.com/Blackstareye/deepcopy_submodules">
     <img src="images/Logo_Small.png" alt="Logo" width="100" height="95">
   </a>
 
@@ -36,12 +36,9 @@
   <p align="center">
     This bash program helps to migrate or deploy git projects with many submodules from a private area (like a LAN), to a public area (like github).
     <br />
-    <a href="https://github.com/Blackeye/deep_copy_submodules"><strong>Explore the docs »</strong></a>
-    <br />
-    <br />
-    <a href="https://github.com/Blackeye/deep_copy_submodules/issues">Report Bug</a>
+    <a href="https://github.com/Blackstareye/deepcopy_submodules/issues">Report Bug</a>
     ·
-    <a href="https://github.com/Blackeye/deep_copy_submodules/issues">Request Feature</a>
+    <a href="https://github.com/Blackstareye/deepcopy_submodules/issues">Request Feature</a>
   </p>
 </p>
 
@@ -88,14 +85,14 @@ So I made this project.
 
 I also tried some test concepts I learned in university for testcoverage. It was also an ..let's say experience writing unit test in and for bash oO.
 
-Have a look on [Test Coverage](tst/testcoverage.md)
+Have a look on [Test Coverage](https://github.com/Blackstareye/deep_copy_submodules_test/blob/cc6e981a8a8f977e83afe5fcea58bae45756e76f/testcoverage.md)
   
 ## Getting Started
 
 To get a local copy up and running follow these simple steps.
 
 1. clone the repo
-2. have a look on the config.conf (see [config](conf.config.conf))
+2. have a look on the config.conf (see [config](config.conf))
 3. cd to the cloned repo and run `install.sh`:
    1. > `cd <cloned_repo>`
    2. >`bash install.sh`
@@ -135,7 +132,7 @@ bash deep_copy_submodules.sh "local" "/foo/bar/git_repo" "<public_url>"
 ### Config
 
 The Config explanation is added directly to the given config parameter.
-see: [config](config.config.conf)
+see: [config](config.conf)
 
 ### IMPORTANT NOTES
 
@@ -151,7 +148,7 @@ Unfortunately projects with git lfs do not work on the sytems I use it. So I can
 <!-- ROADMAP -->
 ## Roadmap
 
-See the [open issues](https://github.com/Blackeye/deep_copy_submodules/issues) for a list of proposed features (and known issues).
+See the [open issues](https://github.com/Blackstareye/deepcopy_submodules/issues) for a list of proposed features (and known issues).
 
 <!-- CONTRIBUTING -->
 ## Contributing
@@ -166,21 +163,23 @@ If you have an idea for amazing feature or a nice way to do things more easily i
 
 ## Testing
 
-    Have a look on 
-    
-    * [README.md](https://github.com/Blackstareye/deep_copy_submodules_test) 
-    * [Test Coverage](https://github.com/Blackstareye/deep_copy_submodules_test/blob/cc6e981a8a8f977e83afe5fcea58bae45756e76f/testcoverage.md)
+  Have a look on 
+  
+  * [README.md](https://github.com/Blackstareye/deep_copy_submodules_test) 
+  * [Test Coverage](https://github.com/Blackstareye/deep_copy_submodules_test/blob/cc6e981a8a8f977e83afe5fcea58bae45756e76f/testcoverage.md)
 <!-- LICENSE -->
 ## License
 
-Distributed under the GPL v-3. See `LICENSE` for more information.
+Distributed under the GPL version 3. See `LICENSE` for more information.
+
+Images are licensed under the License [Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)](https://creativecommons.org/licenses/by-nc-nd/4.0/)
 
 <!-- CONTACT -->
 ## Contact
 
 Blackeye - [@BlackeyeM](https://twitter.com/BlackeyeM) - private_blackeye+deepcopy@posteo.de
 
-Project Link: [https://github.com/Blackeye/deep_copy_submodules](https://github.com/Blackeye/deep_copy_submodules)
+Project Link: [https://github.com/Blackstareye/deepcopy_submodules](https://github.com/Blackstareye/deepcopy_submodules)
 
 <!-- ACKNOWLEDGEMENTS -->
 ## Acknowledgements
