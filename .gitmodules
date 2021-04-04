@@ -9,4 +9,4 @@
 	url = https://github.com/bats-core/bats-file.git
 [submodule "tst"]
 	path = tst
-	url = http://blacklinux/blackproject/deep_copy_submodules_test
+	url = git@github.com:Blackstareye/deep_copy_submodules_test.git
