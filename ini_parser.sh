@@ -31,7 +31,7 @@ preprocessing() {
     info "INFO PARSING INI" "parsing ${filename} into standardized format ini file: ${TMP_FILE_PATH}"
     
     # clear invalid characters
-    sed 's/^\[.\+"\(.\+\)\"\]/[\1]/' "${filename}" | sed 's/\-/_/g' > "${TMP_FILE_PATH}"
+    sed 's/^\[.\+"\(.\+\)\"\]/[\1]/' "${filename}"  > "${TMP_FILE_PATH}" # | sed 's/\-/_/g'
     
     echo "true"
 }
@@ -51,6 +51,7 @@ get_ini_sections(){
     sections="$(read_ini_sections "$filename")"
     for section in $sections; do
         array_name="configuration_${section}"
+        # BECAREFUL
         declare -g -A "${array_name}"
     done
     eval "$(gawk -F= '{
