@@ -18,7 +18,9 @@ git() {
             check_path_dir "${argument[3]}"
             return $?
         ;;
-        
+        "config credential.helper cache")
+            return 1
+        ;;
         *)
             
         ;;

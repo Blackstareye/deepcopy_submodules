@@ -17,7 +17,6 @@ if [[ -n "$1" ]]; then
         bats --output "./report" log*.bats | tee -a "$logfile"
         echo "=====running ini tests ====" | tee -a "$logfile"
         bats --output "./report" ini*.bats | tee -a "$logfile"
-        bats --output "./report" . | tee "$logfile"
     else
         for file in *.bats; do
             echo "testing file: $file" | tee -a  "$logfile"

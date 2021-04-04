@@ -35,28 +35,28 @@ function teardown() {
     URL_ARR=("foo" "localhost")
     run remove_submodules
     assert_failure
-    assert_output --partial "Error occured - Git Operation : Removing Task was not possible ."
+    assert_output --partial "Error occured - Git Operation : Removing Task was not possible"
 }
 @test "set 2 remove_submodules - section list not there: " {
     #section_list=("foo" "bar")
     URL_ARR=("foo" "localhost")
     run remove_submodules  ${TMP_PATH}
     assert_failure
-    assert_output --partial "Error occured - Git Operation : Removing Task was not possible ."
+    assert_output --partial "Error occured - Git Operation : Removing Task was not possible"
 }
 @test "set 3 remove_submodules - more than one param" {
     section_list=("foo" "bar")
     URL_ARR=("foo","localhost")
     run remove_submodules  "${TMP_PATH}" "foo" "bar"
     assert_failure
-    assert_output --partial "Error occured - Git Operation : Removing Task was not possible ."
+    assert_output --partial "Error occured - Git Operation : Removing Task was not possible"
 }
 @test "set 4 remove_submodules - url set is empty" {
     section_list=("foo" "bar")
     URL_ARR=()
     run remove_submodules  "${TMP_PATH}" "foo" "bar"
     assert_failure
-    assert_output --partial "Error occured - Git Operation : Removing Task was not possible ."
+    assert_output --partial "Error occured - Git Operation : Removing Task was not possible"
 }
 
 
@@ -65,7 +65,7 @@ function teardown() {
     URL_ARR=("foo" "localhost")
     run add_submodules_local
     assert_failure
-    assert_output --partial "Error occured - Git Operation : Adding (local) Task was not possible . "
+    assert_output --partial "Error occured - Git Operation : Adding (local) Task was not possible "
 }
 @test "set 6 add_submodules_local - section list not there: " {
     #section_list=("foo" "bar")
@@ -79,21 +79,21 @@ function teardown() {
     URL_ARR=("foo","localhost")
     run add_submodules_local  "${TMP_PATH}" "foo" "bar"
     assert_failure
-    assert_output --partial "Error occured - Git Operation : Adding (local) Task was not possible . "
+    assert_output --partial "Error occured - Git Operation : Adding (local) Task was not possible "
 }
 @test "set 8 add_submodules_local - url set is empty" {
     section_list=("foo" "bar")
     URL_ARR=()
     run add_submodules_local  "${TMP_PATH}" "foo" "bar"
     assert_failure
-    assert_output --partial "Error occured - Git Operation : Adding (local) Task was not possible . "
+    assert_output --partial "Error occured - Git Operation : Adding (local) Task was not possible "
 }
 @test "set 9 push_changes - zero params: " {
     section_list=("foo" "bar")
     URL_ARR=("foo" "localhost")
     run push_changes
     assert_failure
-    assert_output --partial "Error occured - Git Operation : Push Task was not possible ."
+    assert_output --partial "Error occured - Git Operation : Push Task was not possible"
 }
 @test "set 10 push_changes - section list not there: " {
     #section_list=("foo" "bar")
@@ -107,21 +107,21 @@ function teardown() {
     URL_ARR=("foo","localhost")
     run push_changes  "${TMP_PATH}" "foo" "bar"
     assert_failure
-    assert_output --partial "Error occured - Git Operation : Push Task was not possible ."
+    assert_output --partial "Error occured - Git Operation : Push Task was not possible"
 }
 @test "set 12  push_changes - url set is empty" {
     section_list=("foo" "bar")
     URL_ARR=()
     run push_changes  "${TMP_PATH}" "foo" "bar"
     assert_failure
-    assert_output --partial "Error occured - Git Operation : Push Task was not possible ."
+    assert_output --partial "Error occured - Git Operation : Push Task was not possible"
 }
 @test "set 13 add_submodules_new_remote - zero params: " {
     section_list=("foo" "bar")
     URL_ARR=("foo" "localhost")
     run add_submodules_new_remote
     assert_failure
-    assert_output --partial "Error occured - Git Operation : Adding Task was not possible ."
+    assert_output --partial "Error occured - Git Operation : Adding Task was not possible"
 }
 @test "set 14 add_submodules_new_remote - section list not there: " {
     #section_list=("foo" "bar")
@@ -135,14 +135,14 @@ function teardown() {
     URL_ARR=("foo","localhost")
     run add_submodules_new_remote  "${TMP_PATH}" "foo" "bar"
     assert_failure
-    assert_output --partial "Error occured - Git Operation : Adding Task was not possible ."
+    assert_output --partial "Error occured - Git Operation : Adding Task was not possible"
 }
 @test "set 16  add_submodules_new_remote - url set is empty" {
     section_list=("foo" "bar")
     URL_ARR=()
     run add_submodules_new_remote  "${TMP_PATH}" "foo" "bar"
     assert_failure
-    assert_output --partial "Error occured - Git Operation : Adding Task was not possible ."
+    assert_output --partial "Error occured - Git Operation : Adding Task was not possible"
 }
 @test "set 17 clone repo remote - zero params: " {
     URL_ARR=("localhost" "localhost")
@@ -150,7 +150,7 @@ function teardown() {
     run clone_remote 
     #run clone_remote  ${URL_ARR[0]} $target
     assert_failure
-    assert_output --partial "Error occured - Git Operation : Clone Task was not possible ."
+    assert_output --partial "Error occured - Git Operation : Clone Task was not possible"
 }
 
 @test "set 18 clone repo remote  - more than one param" {
@@ -159,7 +159,7 @@ function teardown() {
     run clone_remote "lorem" "ipsum" "set dolor"
     #run clone_remote  ${URL_ARR[0]} $target
     assert_failure
-    assert_output --partial "Error occured - Git Operation : Clone Task was not possible ."
+    assert_output --partial "Error occured - Git Operation : Clone Task was not possible"
 }
 @test "set 19 clone repo remote  - url set is empty" {
     section_list=("foo" "bar")
