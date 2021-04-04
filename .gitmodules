@@ -7,3 +7,6 @@
 [submodule "tst/test_helper/bats-file"]
 	path = tst/test_helper/bats-file
 	url = https://github.com/bats-core/bats-file.git
+[submodule "tst"]
+	path = tst
+	url = http://blacklinux/blackproject/deep_copy_submodules_test
