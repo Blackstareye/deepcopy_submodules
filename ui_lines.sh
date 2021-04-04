@@ -35,29 +35,44 @@ print_status() {
     
     local url1_val
     local url2_val
-    local green_true="$COLOR_GREEN true$COLOR_RESET"
-    local red_false="$COLOR_RED true$COLOR_RESET"
+    local green_true="${COLOR_GREEN}true$COLOR_RESET"
+    local red_false="${COLOR_RED}false$COLOR_RESET"
     if [[ "${IS_VALID_ARR[0]}" == "true" ]]; then
         url1_val="$green_true"
     else
         url1_val="$red_false"
     fi
-    if [[ "${IS_VALID_ARR[0]}" == "true" ]]; then
+    if [[ "${IS_VALID_ARR[1]}" == "true" ]]; then
         url2_val="$green_true"
     else
         url2_val="$red_false"
     fi
     # first :
     echo "============URLs=================="
-    echo "repo that will be copied: $COLOR_YELLOW${url1}($url1_val)$COLOR_RESET"
-    echo "to: $COLOR_YELLOW ${url2}($url2_val) $COLOR_RESET"
+    echo "repo that will be copied: $COLOR_YELLOW${url1}$COLOR_RESET(valid:$url1_val)"
+    echo "to: $COLOR_YELLOW ${url2}$COLOR_RESET(valid:$url2_val)"
     echo "=============================="
     if [[ "$DEBUG" == "true" ]]; then
-        printf "VALIDATION=$COLOR_YELLOW%s$COLOR_RESET, TEST_CONNECTIONS=$COLOR_YELLOW%s$COLOR_RESET" "$VALIDATION" "$TEST_CONNECTIONS"
-        printf "log_path=$COLOR_YELLOW%s$COLOR_RESET"  "$LOG_PATH"
-        printf "config=$COLOR_YELLOW%s$COLOR_RESET"  "$CONFIG_FILE"
+        printf "VALIDATION=$COLOR_YELLOW%s$COLOR_RESET, TEST_CONNECTIONS=$COLOR_YELLOW%s$COLOR_RESET \n" "$VALIDATION" "$TEST_CONNECTIONS"
+        printf "log_path=$COLOR_YELLOW%s$COLOR_RESET \n"  "$LOG_PATH "
+        printf "config=$COLOR_YELLOW%s$COLOR_RESET \n"  "$CONFIG_FILE"
+        echo "=============================="
     fi
-    read -p -r  "is that corect? [Y/n]" -n 1 answer
+    read -rp "is that corect? [Y/n]" -n 1 answer
+    if [[ "$answer" == "n" ]]; then
+        echo "Deep Copy Aborted. Please fix your params." && exit 1
+    fi
+}
+
+show_info() {
+    echo "DEBUG CHECK:"
+    echo "Before continuing to the main task, please verify the parameters:"
+    echo "=============================="
+    printf "Temp Repo Path: $COLOR_YELLOW%s$COLOR_RESET \n" "$1"
+    printf "Git Module File: $COLOR_YELLOW%s$COLOR_RESET \n" "$2"
+    printf "Remote Adress: $COLOR_YELLOW%s$COLOR_RESET \n" "$3"
+    echo "=============================="
+    read -rp "all corect? [Y/n]" -n 1 answer
     if [[ "$answer" == "n" ]]; then
         echo "Deep Copy Aborted. Please fix your params." && exit 1
     fi

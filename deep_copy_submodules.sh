@@ -5,7 +5,11 @@
 # if it is a remote  repo (remote <path>) it will clone the repo first
 # if it is local it doesnt need that step
 CONFIG_FILE="$HOME/.conf/submodule_deepcopy/config.conf"
-
+if [[ ! -f "$CONFIG_FILE" ]]; then
+    echo "ERROR: No config found."
+    echo "Please run the script install.sh before using this program."
+    exit 1
+fi
 
 SOURCE_LOCAL_URL=""
 BASE_PATH=""
@@ -48,6 +52,8 @@ clean_up() {
         # Using :? will cause the command to fail if the variable is null or unset. Similarly, you can use :- to set a default value if applicable.
         rm -rf "${SOURCE_LOCAL_URL:?}"/
     fi
+    [[ -f "tmp.file" ]] && rm "tmp.file"
+    
 }
 
 # TODO trap clean_up ERR
@@ -121,18 +127,19 @@ clone_repo_from_remote() {
 
 main() {
     
+    echo "Getting Params and validating them if necessary..."
     get_params "$@"
     
-    print_status
+    print_status "${URL_ARR[@]}"
     if [[ "${VALIDATION}" == "true" && "${IS_VALID_ARR[0]}" != "true" || "${IS_VALID_ARR[1]}" != "true" ]]; then
         error "URLS not valid" "There are urls that are not valid: ${IS_VALID_ARR[0]}:${URL_ARR[0]} ; ${IS_VALID_ARR[1]}:${URL_ARR[1]} ; VALIDATION_FLAG=${VALIDATION}"
         console_exit "URLS not valid"
     fi
     if [[ ${IS_REMOTE} == "true" ]]; then
         
-        echo "Cloning repo now...."
+        echo "Extra Task: Cloning repo now...."
         clone_repo_from_remote
-        echo "Cloning repo done."
+        echo "Extra Task: Cloning repo done."
         
         elif [[ ${IS_LOCAL} == "true" ]]; then
         SOURCE_LOCAL_URL=${URL_ARR[0]}
@@ -146,9 +153,7 @@ main() {
     local git_module_path=${SOURCE_LOCAL_URL}/${GIT_MODULE_FILE}
     if [[ -f  ${git_module_path} ]]; then
         # call ini parser:
-        [[ $DEBUG ]] && echo "Parsing Ini now..."
-        parse_ini "${git_module_path}"
-        [[ $DEBUG ]] && echo "Parsing Ini done"
+        
         if [[ ${CREATE_TMP_FOLDER} == "true" ]]; then
             # space is important
             rm -rf "${TMP_PATH:?}"
@@ -158,11 +163,16 @@ main() {
             fi
             SOURCE_LOCAL_URL=${TMP_PATH}
         fi
-        [[ $DEBUG ]] && echo "Using folder $COLOR_YELLOW $SOURCE_LOCAL_URL $COLOR_RESET for uploading now."
+        [[ $DEBUG ]] && echo "DEBUG: Parsing Ini now..."
+        parse_ini "${git_module_path}" > /dev/null
+        [[ $DEBUG ]] && echo "DEBUG: Parsing Ini done"
+        [[ $DEBUG ]] && echo "DEBUG: Using folder $COLOR_YELLOW $SOURCE_LOCAL_URL $COLOR_RESET for uploading now."
         # prepare .gitmodules
         # change all url with new domain url
         # First push submodules
         # then delete and change root git
+        [[ $DEBUG ]] && show_info "$SOURCE_LOCAL_URL" "$git_module_path" "${URL_ARR[1]}"
+        echo "=======Main Tasks======="
         echo "(1/5): Uploading submodules to $COLOR_YELLOW ${URL_ARR[1]} $COLOR_RESET"
         add_submodules_new_remote ${SOURCE_LOCAL_URL}
         echo "(2/5): Removing now local submodules ... "
@@ -201,3 +211,4 @@ init_deepcopy() {
 
 init_deepcopy
 main "$@"
+exit 0

@@ -5,7 +5,7 @@
 
 is_valid_path() {
     var="${1/#\~/$HOME}"
-    if [[ -d ${var} ]]; then
+    if [[ -d ${var}  ]]; then #IMPROVE && -d "${var}/.git"
         echo "true"
     else
         echo "false"

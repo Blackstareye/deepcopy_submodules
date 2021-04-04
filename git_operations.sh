@@ -116,6 +116,11 @@ task_add_submodules_new_remote() {
     fi
     local trimmed=$(echo "${URL_ARR[1]}" | sed 's:/*$::')
     local remote_url="${trimmed}/${section}.git"
+    info "GIT USE CREDENTIAL" "value: $GIT_USE_CREDENTIAL_CACHE"
+    if [[ "$GIT_USE_CREDENTIAL_CACHE" == "true" ]]; then
+        git config credential.helper cache &>tmp.file  || { error "@task_add_submodules_new_remote git config credential.helper cache error" "error: $(cat tmp.file)"; return 1; }
+        info "GIT USE CREDENTIAL" "activated."
+    fi
     #local remote_url="${URL_ARR[1]}/${section}.git"
     for section in "${section_list[@]}"; do
         info "PUBLISHING TO NEW REMOTE"  "SUBMODULE: [${section}] changing directory ${1}/${section}"
