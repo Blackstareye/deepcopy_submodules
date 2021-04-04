@@ -18,11 +18,11 @@
 *** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
 *** https://www.markdownguide.org/basic-syntax/#reference-style-links
 -->
-[![Contributors][contributors-shield]][contributors-url]
+<!-- [![Contributors][contributors-shield]][contributors-url]
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
-[![MIT License][license-shield]][license-url]
+[![MIT License][license-shield]][license-url] -->
 
 <!-- PROJECT LOGO -->
 <br />
@@ -191,7 +191,7 @@ Project Link: [https://github.com/Blackeye/deep_copy_submodules](https://github.
 ## Acknowledgements
 
 * Talks, raw testing, helpful tips and Opinions: [Columbarius](https://github.com/columbarius)
-* [Readne Template](https://github.com/othneildrew/Best-README-Template)
+* [Readme Template](https://github.com/othneildrew/Best-README-Template)
 
 For Testing, thanks for those amazing projects, that make bash unit testing AT LEAST doable.
 
