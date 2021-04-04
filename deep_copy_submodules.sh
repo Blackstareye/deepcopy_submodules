@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 # Author: Blackeye
-# TODO License: GPL v3,
 # this script will deep copy the modules of a given git repo
 # if it is a remote  repo (remote <path>) it will clone the repo first
 # if it is local it doesnt need that step
@@ -54,14 +53,6 @@ clean_up() {
     fi
     [[ -f "tmp.file" ]] && rm "tmp.file"
     
-}
-
-# TODO trap clean_up ERR
-error_actions() {
-    echo "an error occured. See log what happened."
-    echo "cleaning up"
-    clean_up
-    echo "done."
 }
 
 get_params() {
