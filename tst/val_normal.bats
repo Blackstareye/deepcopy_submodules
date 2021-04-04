@@ -81,7 +81,7 @@ function setup() {
     VALIDATION="true"
     source "tst/validation_test_set.sh"
     declare -a firstcall_check=("true" "${SSH_syn_sucess[0]}")
-    declare -a secondcall_check=("true" "${HTTPS_sem_sucess[3]}")
+    declare -a secondcall_check=("true" "${HTTPS_sem_sucess[1]}")
     run plausi_check "ssh" "${firstcall_check[1]}" #"${HTTPS_sem_sucess[1]}" 
     assert_success
     echo ${firstcall_check[*]}
@@ -97,7 +97,7 @@ function setup() {
     VALIDATION="false"
     source "tst/validation_test_set.sh"
     declare -a firstcall_check=("true" "${HTTPS_syn_faulty[0]}")
-    declare -a secondcall_check=("true" "${SSH_syn_faulty[1]}")
+    declare -a secondcall_check=("true" "${HTTPS_syn_faulty[1]}")
     run plausi_check "remote" "${firstcall_check[1]}" #"${HTTPS_sem_sucess[1]}" 
     assert_success
     echo ${firstcall_check[*]}

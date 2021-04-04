@@ -17,4 +17,8 @@ source "tst/validation_test_set.sh"
 #     declare -a secondcall_check=("false" "${HTTPS_syn_faulty[1]}")
 #plausi_check "remote" "localhost"
 # shellcheck disable=SC2154
-plausi_check "${secondcall_check[1]}"
+    TEST_CONNECTIONS="false"
+    VALIDATION="true"
+    declare -a firstcall_check=("true" "${SSH_syn_sucess[0]}")
+    declare -a secondcall_check=("true" "${HTTPS_sem_sucess[1]}")
+plausi_check "${secondcall_check[1]}" #"${HTTPS_sem_sucess[1]}"

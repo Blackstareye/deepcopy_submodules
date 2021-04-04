@@ -45,7 +45,7 @@ checkssh() {
     #     echo "false"
     # fi
     info "WARNING EXPERIMANTEL FEATURE USE SSH" "WARNING SSH Can't be validated right now if connection is alive or not."
-    echo "unknown"
+    echo "true"
 }
 
 checkurl() {
@@ -103,7 +103,7 @@ validate_param() {
     
     local is_valid
     local url_type
-    if [[ "$VALIDATION" == "false" || -z "$VALIDATION" ]]; then
+    if [[ "$VALIDATION" != "true" || -z "$VALIDATION" ]]; then
         # skip validation
         echo "true"
     else
@@ -127,8 +127,6 @@ validate_param() {
             
             if [[ "$is_valid" == true ]]; then
                 info "CONNECTION  = EXIST"
-                
-                elif [[ "${is_valid}" == "unknown" ]]; then
                 if [[ "${is_ssh}" == true ]]; then
                     info "TYPE  = SSH"
                 fi

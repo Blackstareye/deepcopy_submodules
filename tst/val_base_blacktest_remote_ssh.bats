@@ -22,11 +22,11 @@ function setup() {
 }
 
 # with base ssh sem_okay_ssh sem_okay_ssh
-@test "set base: ssh sem_okay_ssh sem_okay_ssh" {
+@test "set base: ssh sem_okay_ssh sem_https_okay" {
     # NOTE source instead of load, arrays have problems with load
     source "tst/validation_test_set.sh"
-    declare -a firstcall_check=("unknown" "${SSH_sem_sucess[0]}")
-    declare -a secondcall_check=("unknown" "${SSH_sem_sucess[1]}")
+    declare -a firstcall_check=("true" "${SSH_sem_sucess[0]}")
+    declare -a secondcall_check=("true" "${HTTPS_sem_sucess[1]}")
     run plausi_check "ssh" "${firstcall_check[1]}" #"${HTTPS_sem_sucess[1]}" 
     assert_success
     echo ${firstcall_check[*]}
@@ -36,11 +36,11 @@ function setup() {
     assert_equal "${output[*]}" "${secondcall_check[*]}"
 }
 # BASE Input Paritioning
-@test "set 1 : ssh, sem_okay_https, sem_okay_ssh" {
+@test "set 1 : ssh, sem_okay_https, sem_https_okay" {
     # NOTE source instead of load, arrays have problems with load
     source "tst/validation_test_set.sh"
-    declare -a firstcall_check=("unknown" "${HTTPS_sem_sucess[1]}")
-    declare -a secondcall_check=("unknown" "${SSH_sem_sucess[0]}")
+    declare -a firstcall_check=("true" "${HTTPS_sem_sucess[1]}")
+    declare -a secondcall_check=("true" "${HTTPS_sem_sucess[0]}")
     run plausi_check "ssh" "${firstcall_check[1]}" #"${HTTPS_sem_sucess[1]}" 
     assert_success
     echo ${firstcall_check[*]}
@@ -49,11 +49,11 @@ function setup() {
     assert_success
     assert_equal "${output[*]}" "${secondcall_check[*]}"
 }
-@test "set 2: ssh faulty sem_okay_ssh" {
+@test "set 2: ssh faulty sem_https_okay" {
     # NOTE source instead of load, arrays have problems with load
     source "tst/validation_test_set.sh"
-    declare -a firstcall_check=("unknown" "${SSH_syn_faulty[2]}")
-    declare -a secondcall_check=("unknown" "${SSH_sem_sucess[0]}")
+    declare -a firstcall_check=("true" "${SSH_syn_faulty[2]}")
+    declare -a secondcall_check=("true" "${HTTPS_sem_sucess[0]}")
     run plausi_check "ssh" "${firstcall_check[1]}" #"${HTTPS_sem_sucess[1]}" 
     assert_success
     echo ${firstcall_check[*]}
@@ -62,11 +62,11 @@ function setup() {
     assert_success
     assert_equal "${output[*]}" "${secondcall_check[*]}"
 }
-@test "set 3: local sem_okay_ssh sem_okay_ssh" {
+@test "set 3: local sem_okay_ssh sem_https_okay" {
     # NOTE source instead of load, arrays have problems with load
     source "tst/validation_test_set.sh"
     declare -a firstcall_check=("false" "${SSH_sem_sucess[1]}")
-    declare -a secondcall_check=("unknown" "${SSH_sem_sucess[0]}")
+    declare -a secondcall_check=("true" "${HTTPS_sem_sucess[0]}")
     run plausi_check "local" "${firstcall_check[1]}" #"${HTTPS_sem_sucess[1]}" 
     assert_success
     echo ${firstcall_check[*]}
@@ -75,11 +75,11 @@ function setup() {
     assert_success
     assert_equal "${output[*]}" "${secondcall_check[*]}"
 }
-@test "set 4: faulty sem_okay_ssh sem_okay_ssh" {
+@test "set 4: faulty sem_okay_ssh sem_https_okay" {
     # NOTE source instead of load, arrays have problems with load
     source "tst/validation_test_set.sh"
-    declare -a firstcall_check=("true" "${SSH_sem_sucess[2]}")
-    declare -a secondcall_check=("unknown" "${SSH_sem_sucess[0]}")
+    declare -a firstcall_check=("false" "${SSH_sem_sucess[2]}")
+    declare -a secondcall_check=("true" "${HTTPS_sem_sucess[0]}")
     run plausi_check "ssaah" "${firstcall_check[1]}" #"${HTTPS_sem_sucess[1]}" 
     assert_failure
     echo ${firstcall_check[*]}
@@ -91,8 +91,8 @@ function setup() {
 @test "set 5: ssh sem_okay_ssh faulty" {
     # NOTE source instead of load, arrays have problems with load
     source "tst/validation_test_set.sh"
-    declare -a firstcall_check=("unknown" "${SSH_sem_sucess[2]}")
-    declare -a secondcall_check=("unknown" "${SSH_syn_faulty[0]}")
+    declare -a firstcall_check=("true" "${SSH_sem_sucess[2]}")
+    declare -a secondcall_check=("false" "${SSH_syn_faulty[0]}")
     run plausi_check "ssh" "${firstcall_check[1]}" #"${HTTPS_sem_sucess[1]}" 
     assert_success
     echo ${firstcall_check[*]}
@@ -101,11 +101,11 @@ function setup() {
     assert_success
     assert_equal "${output[*]}" "${secondcall_check[*]}"
 }
-@test "set 6: ssh sem_okay_ssh sem_okay_https" {
+@test "set 6: ssh sem_okay_ssh syn_okay_https" {
     # NOTE source instead of load, arrays have problems with load
     source "tst/validation_test_set.sh"
-    declare -a firstcall_check=("unknown" "${SSH_sem_sucess[2]}")
-    declare -a secondcall_check=("true" "${HTTPS_sem_sucess[0]}")
+    declare -a firstcall_check=("true" "${SSH_sem_sucess[2]}")
+    declare -a secondcall_check=("false" "${HTTPS_syn_sucess[0]}")
     run plausi_check "ssh" "${firstcall_check[1]}" #"${HTTPS_sem_sucess[1]}" 
     assert_success
     echo ${firstcall_check[*]}
