@@ -51,14 +51,10 @@
   <ol>
     <li>
       <a href="#about-the-project">About The Project</a>
-      <ul>
-        <li><a href="#built-with">Built With</a></li>
-      </ul>
     </li>
     <li>
       <a href="#getting-started">Getting Started</a>
       <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
         <li><a href="#installation">Installation</a></li>
       </ul>
     </li>
@@ -173,12 +169,14 @@ If you have an idea for amazing feature or a nice way to do things more easily i
 
 ## Testing
 
-    Have a look on [Test Coverage](tst/testcoverage.md)
-    >TODO
+    Have a look on 
+    
+    * [README.md](https://github.com/Blackstareye/deep_copy_submodules_test) 
+    * [Test Coverage](https://github.com/Blackstareye/deep_copy_submodules_test/blob/cc6e981a8a8f977e83afe5fcea58bae45756e76f/testcoverage.md)
 <!-- LICENSE -->
 ## License
 
-Distributed under the GPL-3. See `LICENSE` for more information.
+Distributed under the GPL v-3. See `LICENSE` for more information.
 
 <!-- CONTACT -->
 ## Contact
