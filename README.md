@@ -28,7 +28,7 @@
 <br />
 <p align="center">
   <a href="https://github.com/Blackeye/deep_copy_submodules">
-    <img src="images/Logo_Small.png" alt="Logo" width="100" height="100">
+    <img src="images/Logo_Small.png" alt="Logo" width="100" height="95">
   </a>
 
   <h3 align="center">Deep Copy of Submodules</h3>
@@ -127,11 +127,22 @@ bash deep_copy_submodules.sh "local" "/foo/bar/git_repo" "<public_url>"
 
 ### Parameter
 
-TODO
+* --help  Shows the help for that script
+* --usuage Shows the usuage for that script
+* -v Enables Validation if it is in config not set
+* -t Enables Testing_Connections if it is in config not set
+
+**Validation:** The Connection can be checked before they will be progressed with this flag. This will enable syntax checking of the given urls and parameters. If also **Testing Connections** is enabled, the connections will also be checked with curl.
+
+**Testing Connections:** Connections can be checked before they will be progressed with this flag. A curl request will be used for checking
+
+**WARNING:** If validation is turned off, the urls will be used as they are with no further checking. use this with caution or if you know what you do.
+
 
 ### Config
 
-TODO
+The Config explanation is added directly to the given config parameter.
+see: [config](config.config.conf)
 
 ### IMPORTANT NOTES
 
