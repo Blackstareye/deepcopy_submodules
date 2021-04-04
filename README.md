@@ -151,6 +151,10 @@ see: [config](config.config.conf)
   * this relies on the fact, that I parse the sections of the .gitmodules ini into dynamic variables like
     * `$configuration_submodule[key]=value`
 
+### Known Issues
+
+Unfortunately projects with git lfs do not work on the sytems I use it. So I can't guarantee if it will work. But this is the first issue I will hunt down and fix.
+
 <!-- ROADMAP -->
 ## Roadmap
 
